@@ -1,40 +1,91 @@
-# FeNAgO — Next.js Agentic SaaS Boilerplate
+# TuneForge — AI-Powered Music Creation Platform
 
-![FeNAgO Logo](./app/icon.png)
+![TuneForge Logo](./public/tuneforge_logo.png)
 
-FeNAgO is a complete platform for building agentic AI-powered SaaS products. This template allows you to create Agentic SaaS applications without wasting time on the plumbing and infrastructure so you can build products in days and not months.
+**Tagline**: "Audio Experience"
 
-FeNAgO empowers students, developers, startups, and entrepreneurs to build fully agentic SaaS solutions at lightning speed by handling security (logins & registration), database setup, SEO, and monetization right out of the box—powered by Next.js, Tailwind, and React. All you bring is your idea!
+TuneForge is an AI-powered music creation platform that empowers creators to generate studio-quality music in seconds. Whether you're a content creator, indie game developer, or music enthusiast, TuneForge makes professional music creation accessible to everyone—no experience needed.
 
-<sub>**Watch/Star the repo to be notified when updates are pushed**</sub>
+Transform your creative ideas into full songs instantly using cutting-edge AI technology powered by the Suno API. Create commercially licensed, royalty-free music for any project.
 
-## Getting Started
+<sub>**Unleash Your Inner Composer — Create Studio-Quality Music in Seconds**</sub>
 
-Follow these steps to get FeNAgO up and running on your machine:
+## 🚀 Key Features
 
-1. Create a new folder and open WindSurf and the folder  
-2. Clone the repository:
+### 🎵 AI-Powered Music Generation
+- **Instant Creation**: Generate studio-quality music in seconds
+- **Vocal & Instrumental**: Create songs with realistic vocals or purely instrumental tracks
+- **Genre Flexibility**: Support for all music genres and moods
+- **Commercial Rights**: Royalty-free music ready for any project
+
+### 🎨 User Experience
+- **Beginner-Friendly**: No musical experience required
+- **Professional Tools**: Advanced features for seasoned producers
+- **Customization**: Extend, remix, and modify your creations
+- **Simple Workflow**: Three-step creation process
+
+### 💼 Business Features
+- **Flexible Pricing**: Pay-per-song model with credit packs
+- **Free Trial**: Create your first song for free
+- **User Dashboard**: Comprehensive library management
+- **Admin Panel**: Complete business analytics and user management
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 14, TypeScript, TailwindCSS, DaisyUI
+- **Backend**: Next.js API Routes, MongoDB Atlas
+- **Authentication**: NextAuth.js (Google OAuth, Magic Links)
+- **Payments**: Stripe Integration
+- **AI Integration**: Suno API for music generation
+- **Email**: Resend.com
+- **Analytics**: DataFast
+- **Deployment**: Vercel/Netlify ready
+
+## 🎯 Getting Started
+
+Follow these steps to get TuneForge up and running:
+
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/fenago/fenago21.git
+   cd fenago21
    ```
-3. Install dependencies:
+
+2. **Install dependencies:**
    ```bash
    npm install
    ```
-4. Remove the original remote (if you want to push to your own repository):
-   ```bash
-   git remote remove origin
-   ```
-5. Start the development server:
+
+3. **Environment setup:**
+   - Rename `.env.sample` to `.env`
+   - Add your API keys and credentials:
+     ```env
+     # Suno API
+     SUNO_API_KEY=your_suno_api_key
+     
+     # Database
+     MONGODB_URI=your_mongodb_connection_string
+     
+     # Authentication
+     NEXTAUTH_SECRET=your_nextauth_secret
+     GOOGLE_CLIENT_ID=your_google_client_id
+     GOOGLE_CLIENT_SECRET=your_google_client_secret
+     
+     # Payments
+     STRIPE_SECRET_KEY=your_stripe_secret_key
+     STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+     
+     # Email
+     RESEND_API_KEY=your_resend_api_key
+     ```
+
+4. **Start the development server:**
    ```bash
    npm run dev
    ```
 
-That will get you running!
-
-6. Environment setup:
-   - Rename `.env.sample` to `.env`
-   - Add your API keys and other credentials to the `.env` file
+5. **Open your browser:**
+   Navigate to `http://localhost:3000` to see TuneForge in action!
 
 ## Documentation
 

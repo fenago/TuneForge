@@ -1,10 +1,10 @@
 @echo off
-echo Running Git Push Script for AgenticVoice.net
+echo Running Git Push Script for TuneForge.io
 echo ==========================================
 
-echo Setting remote repository to https://github.com/fenago/AgenticVoice...
+echo Setting remote repository to https://github.com/fenago/TuneForge...
 git remote remove origin 2>nul
-git remote add origin https://github.com/fenago/AgenticVoice.git
+git remote add origin https://github.com/fenago/TuneForge.git
 
 echo.
 echo Checking current status...
@@ -28,7 +28,7 @@ echo WARNING: This will FORCE PUSH to the repository, potentially overwriting re
 echo This makes the remote repository match your local repository exactly.
 set /p confirm="Are you sure you want to force push? (Y/N): "
 if /i "%confirm%"=="Y" (
-  echo Pushing to GitHub repository: https://github.com/fenago/AgenticVoice
+  echo Pushing to GitHub repository: https://github.com/fenago/TuneForge
   git push -f -u origin main
 ) else (
   echo Force push canceled.
