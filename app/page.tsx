@@ -2,6 +2,7 @@ import { Suspense, ReactNode } from 'react';
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Problem from "@/components/Problem";
+import Solution from "@/components/Solution";
 import FeaturesAccordion from "@/components/FeaturesAccordion";
 import Pricing from "@/components/Pricing";
 import Testimonials3 from "@/components/Testimonials3";
@@ -12,9 +13,9 @@ import { Metadata } from 'next';
 
 // Add metadata for SEO
 export const metadata: Metadata = {
-  title: 'FeNAgO - Agentic AI SaaS Platform Template',
-  description: 'The complete platform for building agentic AI-powered SaaS products—ideal for students, developers, startups, and entrepreneurs looking to innovate rapidly. In the near future, every traditional SaaS application will inevitably be surpassed by an Agentic SaaS solution, redefining the competitive landscape.',
-  keywords: 'agentic AI, SaaS template, AI platform, DrLee, AI development, FeNAgO, AI startup',
+  title: 'TuneForge - AI-Powered Music Creation Platform | Audio Experience',
+  description: 'Create studio-quality music in seconds with TuneForge. AI-powered music generation platform for content creators, game developers, and music enthusiasts. No experience needed - just bring your ideas!',
+  keywords: 'AI music generation, music creation, Suno API, royalty-free music, content creator music, game music, TuneForge, AI composer',
 };
 
 export default function Home(): JSX.Element {
@@ -24,13 +25,13 @@ export default function Home(): JSX.Element {
         <Header />
       </Suspense>
       <main>
-        {/* FeNAgO - The complete platform for building agentic AI-powered SaaS products */}
+        {/* TuneForge - AI-powered music creation platform */}
         <Hero />
         <Problem />
+        <Solution />
         <FeaturesAccordion />
         <Pricing />
         <Testimonials3 />
-        <FAQ />
         <CTA />
       </main>
       <Footer />

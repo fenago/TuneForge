@@ -1,103 +1,147 @@
-import config from "@/config";
-import ButtonCheckout from "./ButtonCheckout";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import ButtonSignin from "./ButtonSignin";
 
-// <Pricing/> displays the pricing plans for your app
-// It's your Stripe config in config.js.stripe.plans[] that will be used to display the plans
-// <ButtonCheckout /> renders a button that will redirect the user to Stripe checkout called the /api/stripe/create-checkout API endpoint with the correct priceId
-
+// TuneForge Pricing: Clear pricing tiers encouraging free trial
 const Pricing = () => {
   return (
-    <section className="bg-base-200 overflow-hidden" id="pricing">
-      <div className="py-24 px-8 max-w-5xl mx-auto">
-        <div className="flex flex-col text-center w-full mb-20">
-          <p className="font-medium text-primary mb-8">Pricing</p>
-          <h2 className="font-bold text-3xl lg:text-5xl tracking-tight">
-            Save hours of repetitive code and ship faster!
+    <section className="relative bg-gradient-to-br from-gray-50 to-blue-50 py-16 md:py-24 overflow-hidden" id="pricing">
+      {/* Floating Music Notes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-24 left-12 text-tuneforge-blue-violet/15 animate-bounce animation-delay-700">
+          <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+        <div className="absolute bottom-32 right-16 text-tuneforge-medium-purple/15 animate-bounce animation-delay-1800">
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+        <div className="absolute top-2/3 right-8 text-tuneforge-slate-blue/10 animate-bounce animation-delay-2800">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <h2 className="font-dm-serif font-bold text-3xl md:text-4xl lg:text-5xl text-gray-900 mb-6 hover:text-tuneforge-blue-violet transition-colors duration-500 cursor-default">
+            Simple, Transparent Pricing
           </h2>
+          <p className="font-inter text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed hover:text-gray-700 transition-colors duration-300 cursor-default">
+            Start creating for free, then choose the plan that fits your creative needs. 
+            No hidden fees, no surprises.
+          </p>
         </div>
 
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
-          {config.stripe.plans.map((plan) => (
-            <div key={plan.priceId} className="relative w-full max-w-lg">
-              {plan.isFeatured && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                  <span
-                    className={`badge text-xs text-primary-content font-semibold border-0 bg-primary`}
-                  >
-                    POPULAR
-                  </span>
-                </div>
-              )}
-
-              {plan.isFeatured && (
-                <div
-                  className={`absolute -inset-[1px] rounded-[9px] bg-primary z-10`}
-                ></div>
-              )}
-
-              <div className="relative flex flex-col h-full gap-5 lg:gap-8 z-10 bg-base-100 p-8 rounded-lg">
-                <div className="flex justify-between items-center gap-4">
-                  <div>
-                    <p className="text-lg lg:text-xl font-bold">{plan.name}</p>
-                    {plan.description && (
-                      <p className="text-base-content/80 mt-2">
-                        {plan.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {plan.priceAnchor && (
-                    <div className="flex flex-col justify-end mb-[4px] text-lg ">
-                      <p className="relative">
-                        <span className="absolute bg-base-content h-[1.5px] inset-x-0 top-[53%]"></span>
-                        <span className="text-base-content/80">
-                          ${plan.priceAnchor}
-                        </span>
-                      </p>
-                    </div>
-                  )}
-                  <p className={`text-5xl tracking-tight font-extrabold`}>
-                    ${plan.price}
-                  </p>
-                  <div className="flex flex-col justify-end mb-[4px]">
-                    <p className="text-xs text-base-content/60 uppercase font-semibold">
-                      USD
-                    </p>
-                  </div>
-                </div>
-                {plan.features && (
-                  <ul className="space-y-2.5 leading-relaxed text-base flex-1">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="w-[18px] h-[18px] opacity-80 shrink-0"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-
-                        <span>{feature.name} </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <div className="space-y-2">
-                  <ButtonCheckout priceId={plan.priceId} />
-
-                  <p className="flex items-center justify-center gap-2 text-sm text-center text-base-content/80 font-medium relative">
-                    Pay once. Access forever.
-                  </p>
-                </div>
+        {/* Pricing Cards */}
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-4xl mx-auto">
+          {/* Free Trial Card */}
+          <Card className="group cursor-pointer hover:scale-105 transition-all duration-500">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl mb-2 group-hover:text-tuneforge-blue-violet transition-colors duration-300">Free Trial</CardTitle>
+              <div className="mb-4">
+                <span className="font-dm-serif text-5xl font-bold text-gray-900 group-hover:animate-pulse">$0</span>
               </div>
+              <p className="font-inter text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Perfect for trying TuneForge</p>
+            </CardHeader>
+            
+            <CardContent>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-inter text-gray-700 group-hover:text-gray-800 transition-colors duration-300">1 Free Song</span>
+                </li>
+                <li className="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300 delay-75">
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-inter text-gray-700 group-hover:text-gray-800 transition-colors duration-300">Access to core features</span>
+                </li>
+                <li className="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300 delay-150">
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-inter text-gray-700 group-hover:text-gray-800 transition-colors duration-300">Commercial Use Rights</span>
+                </li>
+              </ul>
+
+              <Link
+                href="/login"
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-inter font-medium py-2 px-4 rounded-lg text-center transition-colors duration-200"
+              >
+                Start for Free
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Creator+ Card - Featured */}
+          <Card className="group relative cursor-pointer hover:scale-105 transition-all duration-500 border-2 border-tuneforge-blue-violet">
+            {/* Featured Badge */}
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 group-hover:animate-bounce">
+              <span className="bg-tuneforge-gradient text-white font-inter font-semibold px-6 py-2 rounded-full text-sm shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                RECOMMENDED
+              </span>
             </div>
-          ))}
+
+            <CardHeader className="text-center mt-4">
+              <CardTitle className="text-2xl mb-2 group-hover:text-tuneforge-blue-violet transition-colors duration-300">Creator+</CardTitle>
+              <div className="mb-4">
+                <span className="font-dm-serif text-5xl font-bold bg-tuneforge-gradient bg-clip-text text-transparent group-hover:animate-pulse">$2</span>
+                <span className="font-inter text-lg text-gray-600 ml-2 group-hover:text-gray-700 transition-colors duration-300">/ song</span>
+              </div>
+              <p className="font-inter text-gray-600 group-hover:text-gray-700 transition-colors duration-300">For serious creators</p>
+            </CardHeader>
+
+            <CardContent>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300">
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-inter text-gray-700 group-hover:text-gray-800 transition-colors duration-300">Pay-as-you-go</span>
+                </li>
+                <li className="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300 delay-75">
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-inter text-gray-700 group-hover:text-gray-800 transition-colors duration-300">All AI models</span>
+                </li>
+                <li className="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300 delay-150">
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-inter text-gray-700 group-hover:text-gray-800 transition-colors duration-300">Priority Support</span>
+                </li>
+                <li className="flex items-center gap-3 group-hover:translate-x-1 transition-transform duration-300 delay-200">
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-inter text-gray-700 group-hover:text-gray-800 transition-colors duration-300">Commercial Rights</span>
+                </li>
+              </ul>
+
+              <Link
+                href="/login"
+                className="w-full bg-tuneforge-gradient hover:bg-tuneforge-gradient-reverse text-white font-inter font-medium py-2 px-4 rounded-lg text-center transition-colors duration-200"
+              >
+                Buy Credits
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Bottom Note */}
+        <div className="text-center mt-12">
+          <p className="font-inter text-gray-500 text-sm">
+            All plans include commercial licensing and royalty-free usage. No hidden fees.
+          </p>
         </div>
       </div>
     </section>

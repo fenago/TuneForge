@@ -1,0 +1,38 @@
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- TuneForge Text -->
+  <g fill="#6B46C1">
+    <!-- T -->
+    <text x="0" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">T</text>
+    <!-- u -->
+    <text x="50" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">u</text>
+    <!-- n -->
+    <text x="125" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">n</text>
+    <!-- e -->
+    <text x="200" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">e</text>
+    <!-- F -->
+    <text x="270" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">F</text>
+    
+    <!-- Special "o" in Forge as vinyl record -->
+    <g transform="translate(345, 60)">
+      <!-- Outer ring of the "o" -->
+      <circle cx="25" cy="25" r="24" fill="none" stroke="#6B46C1" stroke-width="6"/>
+      <!-- Inner vinyl grooves -->
+      <circle cx="25" cy="25" r="18" fill="none" stroke="#6B46C1" stroke-width="1"/>
+      <circle cx="25" cy="25" r="14" fill="none" stroke="#6B46C1" stroke-width="1"/>
+      <circle cx="25" cy="25" r="10" fill="none" stroke="#6B46C1" stroke-width="1"/>
+      <circle cx="25" cy="25" r="6" fill="none" stroke="#6B46C1" stroke-width="1"/>
+      <!-- Center dot -->
+      <circle cx="25" cy="25" r="2" fill="#6B46C1"/>
+    </g>
+    
+    <!-- r -->
+    <text x="400" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">r</text>
+    <!-- g -->
+    <text x="440" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">g</text>
+    <!-- e -->
+    <text x="510" y="100" font-family="Arial, sans-serif" font-size="90" font-weight="bold">e</text>
+  </g>
+  
+  <!-- AUDIO EXPERIENCE subtitle -->
+  <text x="150" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="500" fill="#6B46C1" letter-spacing="8">AUDIO EXPERIENCE</text>
+</svg>

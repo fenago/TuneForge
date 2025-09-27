@@ -20,10 +20,13 @@ const ButtonSignin = ({
   const { data: session, status } = useSession();
 
   const handleClick = () => {
+    console.log("ButtonSignin clicked, status:", status);
     if (status === "authenticated") {
+      console.log("User authenticated, redirecting to:", config.auth.callbackUrl);
       router.push(config.auth.callbackUrl);
     } else {
-      signIn(undefined, { callbackUrl: config.auth.callbackUrl });
+      console.log("User not authenticated, redirecting to login page");
+      router.push("/login");
     }
   };
 
@@ -31,7 +34,7 @@ const ButtonSignin = ({
     return (
       <Link
         href={config.auth.callbackUrl}
-        className={`btn ${extraStyle ? extraStyle : ""}`}
+        className={extraStyle || "flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200"}
       >
         {session.user?.image ? (
           <img
@@ -54,7 +57,7 @@ const ButtonSignin = ({
 
   return (
     <button
-      className={`btn ${extraStyle ? extraStyle : ""}`}
+      className={extraStyle || "bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200"}
       onClick={handleClick}
     >
       {text}

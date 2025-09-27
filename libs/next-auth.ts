@@ -24,7 +24,8 @@ export const authOptions: NextAuthOptionsExtended = {
           name: profile.given_name ? profile.given_name : profile.name,
           email: profile.email,
           image: profile.picture,
-          createdAt: new Date(),
+          emailVerified: new Date(),
+          role: 'USER', // Default role for new users
         };
       },
     }),
@@ -55,8 +56,78 @@ export const authOptions: NextAuthOptionsExtended = {
     session: async ({ session, token }) => {
       if (session?.user) {
         session.user.id = token.sub;
+        
+        // Add user role to session if available
+        if (token.role) {
+          (session.user as any).role = token.role;
+        }
       }
       return session;
+    },
+    jwt: async ({ token, user, account }) => {
+      // Always check and update role from database on every token refresh
+      if (token.email) {
+        try {
+          const connectMongo = (await import('./mongoose')).default;
+          const User = (await import('@/models/User')).default;
+          const { UserRoles } = await import('@/models/User');
+          
+          await connectMongo();
+          
+          // Add timeout to prevent hanging
+          let dbUser = await Promise.race([
+            User.findOne({ email: token.email }),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Database query timeout')), 5000)
+            )
+          ]) as any;
+          
+          // Auto-assign ADMIN role for specific email
+          if (token.email === 'learningscienceai1@gmail.com' && (!dbUser || dbUser.role !== UserRoles.ADMIN)) {
+            if (!dbUser) {
+              // Create admin user if doesn't exist
+              dbUser = new User({
+                name: token.name || 'TuneForge Admin',
+                email: token.email,
+                image: token.picture,
+                role: UserRoles.ADMIN,
+                emailVerified: new Date(),
+                adminData: {
+                  permissions: ['all'],
+                  lastAdminAction: new Date(),
+                  adminNotes: 'Auto-created admin user',
+                },
+                subscription: {
+                  status: 'active',
+                  plan: 'MAX',
+                },
+              });
+            } else {
+              // Update existing user to admin
+              dbUser.role = UserRoles.ADMIN;
+              dbUser.adminData = {
+                permissions: ['all'],
+                lastAdminAction: new Date(),
+                adminNotes: 'Auto-updated to admin',
+              };
+              dbUser.subscription = {
+                ...dbUser.subscription,
+                status: 'active',
+                plan: 'MAX',
+              };
+            }
+            await dbUser.save();
+          }
+          
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.userId = dbUser._id.toString();
+          }
+        } catch (error) {
+          console.error('Error fetching/updating user role:', error);
+        }
+      }
+      return token;
     },
   },
   session: {

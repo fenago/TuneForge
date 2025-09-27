@@ -87,14 +87,55 @@ Follow these steps to get TuneForge up and running:
 5. **Open your browser:**
    Navigate to `http://localhost:3000` to see TuneForge in action!
 
-## Documentation
+## 📚 Platform Architecture
 
-FeNAgO comes with comprehensive documentation to help you get started quickly:
+### 🏠 Landing Page
+- **Hero Section**: Compelling value proposition with clear CTAs
+- **Problem/Solution**: Articulates pain points and positions TuneForge as the solution
+- **Features Showcase**: Interactive accordion highlighting key capabilities
+- **Pricing**: Simple, transparent pricing with free trial
+- **Testimonials**: Social proof from diverse user types
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+
+### 🎛️ User Dashboard
+- **Create Music**: Three-step music generation process
+  - Step 1: Describe your song with genre/mood tags
+  - Step 2: Choose style (optional)
+  - Step 3: Generate with credit tracking
+- **My Library**: Song management with search, filter, and download
+- **Buy Credits**: Secure Stripe-powered credit purchasing
+- **Settings**: Profile management and preferences
+
+### 👑 Admin Panel
+- **Analytics Dashboard**: Revenue, user metrics, and growth charts
+- **User Management**: Comprehensive user administration
+- **Song Management**: Content oversight and moderation
+- **Content Management**: Landing page content updates
+- **Settings**: API keys, pricing, and platform configuration
+
+## 🎨 Design System
+
+### Color Palette
+- **Primary Gradient**: `linear-gradient(to right, #8A2BE2, #4B0082, #483D8B, #6A5ACD, #7B68EE, #9370DB)`
+- **Primary Colors**: Blue Violet (#8A2BE2), Indigo (#4B0082), Slate Blue variants
+- **Neutrals**: Dark Blue (#1a202c), Medium Gray (#718096), Light Gray (#f7fafc)
+
+### Typography
+- **Primary Font**: Inter (sans-serif) - UI elements and body text
+- **Secondary Font**: DM Serif Display (serif) - major headlines
+- **Responsive**: Mobile-first with standard Tailwind breakpoints
+
+## 📖 Documentation
+
+### [Research Documents](./research)
+Comprehensive platform specifications:
+- [Complete Platform Specifications](./research/TuneForge%20Platform%20-%20Complete%20Windsurf%20Specifications.md)
+- [Brand Identity & Design System](./research/TuneForge%20Brand%20Identity%20&%20Design%20System.md)
+- [Landing Page Specification](./research/TuneForge%20Landing%20Page%20Specification.md)
+- [User Dashboard & Admin Panel Specifications](./research/TuneForge%20User%20Dashboard%20&%20Admin%20Panel%20Specifications.md)
 
 ### [DevDocs](./DevDocs)
-
-Implementation guides for setting up core functionality:
-
+Implementation guides for core functionality:
 - [Setting Up Email With Resend](./DevDocs/1_Setting_Up_Email_With_Resend.md)
 - [Setting Up MongoDB Atlas](./DevDocs/2_Setting_Up_MongoDB_Atlas.md)
 - [Setting Up Google Authentication](./DevDocs/3_Setting_Up_Google_Authentication.md)
@@ -105,9 +146,7 @@ Implementation guides for setting up core functionality:
 - [UI Components Guide](./DevDocs/0_UI_Components_Guide.md)
 
 ### [DevPlanDocs](./DevPlanDocs)
-
-Architecture and development planning documents:
-
+Architecture and development planning:
 - [Architecture Overview](./DevPlanDocs/1-Architecture-Overview.md)
 - [Components Overview](./DevPlanDocs/2-Components-Overview.md)
 - [Development Plan](./DevPlanDocs/3-Development-Plan.md)
@@ -115,19 +154,145 @@ Architecture and development planning documents:
 - [Database Models](./DevPlanDocs/5-Database-Models.md)
 - [Authentication System](./DevPlanDocs/6-Authentication-System.md)
 - [Payment Integration](./DevPlanDocs/7-Payment-Integration.md)
-- [Rebranding Strategy](./DevPlanDocs/8-Rebranding-Strategy.md)
 
-## Features
+## 🔧 API Endpoints
 
-- **User Authentication**: Google OAuth and Magic Links
-- **Database Integration**: MongoDB Atlas setup
-- **Payment Processing**: Stripe integration
-- **Email Service**: Resend.com integration
-- **SEO Optimization**: Built-in SEO features
-- **Analytics**: DataFast integration
-- **UI Components**: Modern, responsive design with TailwindCSS and DaisyUI
-- **AI Integration**: OpenAI, ElevenLabs, and more
+### Suno Integration
+- `POST /api/suno/generate` - Create new song
+- `GET /api/suno/status` - Check generation status
+- `GET /api/suno/download` - Get song files
 
-## Support
+### User Management
+- `GET /api/user/credits` - Get credit balance
+- `POST /api/user/credits` - Update credits
+- `GET /api/user/songs` - Get user's library
+- `PUT /api/user/profile` - Update profile
 
-For questions or support, please reach out to support@fenago.com
+### Payment Processing
+- `POST /api/stripe/create-checkout` - Credit purchase
+- `POST /api/stripe/webhook` - Handle payment events
+- `GET /api/stripe/portal` - Customer portal access
+
+## 🗄️ Database Models
+
+### User Model
+```javascript
+{
+  id: ObjectId,
+  email: String,
+  name: String,
+  credits: Number,
+  songs: [ObjectId],
+  subscription: Object,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Song Model
+```javascript
+{
+  id: ObjectId,
+  userId: ObjectId,
+  title: String,
+  genre: String,
+  mood: String,
+  prompt: String,
+  sunoData: Object,
+  fileUrls: Object,
+  createdAt: Date
+}
+```
+
+### Transaction Model
+```javascript
+{
+  id: ObjectId,
+  userId: ObjectId,
+  type: String, // 'credit_purchase', 'song_generation'
+  amount: Number,
+  stripeData: Object,
+  createdAt: Date
+}
+```
+
+## 🚀 Deployment
+
+### Environment Variables Required
+```env
+# Core
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret
+
+# Database
+MONGODB_URI=mongodb+srv://...
+
+# Suno API
+SUNO_API_KEY=your_suno_key
+
+# Authentication
+GOOGLE_CLIENT_ID=your_google_id
+GOOGLE_CLIENT_SECRET=your_google_secret
+
+# Payments
+STRIPE_SECRET_KEY=sk_...
+STRIPE_PUBLISHABLE_KEY=pk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Email
+RESEND_API_KEY=re_...
+
+# Analytics
+DATAFAST_API_KEY=your_datafast_key
+```
+
+### Production Checklist
+- [ ] Set up MongoDB Atlas cluster
+- [ ] Configure Suno API access
+- [ ] Set up Stripe webhooks
+- [ ] Configure domain and SSL
+- [ ] Set up error monitoring
+- [ ] Configure backup strategies
+
+## 🎵 Usage Examples
+
+### Creating Your First Song
+1. **Sign up** for a free account
+2. **Describe your song**: "A upbeat pop song about summer adventures with female vocals"
+3. **Choose genre tags**: Pop, Upbeat, Summer
+4. **Generate**: Click the generate button and wait ~30 seconds
+5. **Download**: Your royalty-free song is ready!
+
+### For Content Creators
+- Generate background music for YouTube videos
+- Create intro/outro jingles for podcasts
+- Produce royalty-free music for social media content
+
+### For Game Developers
+- Generate ambient soundtracks for different game levels
+- Create sound effects and musical stingers
+- Produce menu and loading screen music
+
+### For Businesses
+- Create hold music for phone systems
+- Generate background music for presentations
+- Produce custom jingles for marketing campaigns
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our contributing guidelines for more information.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For questions, support, or feature requests:
+- **Email**: support@tuneforge.com
+- **Documentation**: Check our comprehensive docs above
+- **Issues**: Create an issue on GitHub
+
+---
+
+**Built with ❤️ for creators everywhere. Start your musical journey with TuneForge today!**

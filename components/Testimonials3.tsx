@@ -1,37 +1,39 @@
 import Image from "next/image";
 import { StaticImageData } from "next/image";
-import config from "@/config";
+import { Card, CardContent } from "./ui/card";
 
-// The list of your testimonials. It needs 3 items to fill the row.
+// TuneForge Testimonials: Social proof from diverse user types
 const list: {
   username?: string;
   name: string;
+  role: string;
   text: string;
   img?: string | StaticImageData;
 }[] = [
   {
-    // Optional, use for social media like Twitter. Does not link anywhere but cool to display
-    username: "marclou",
-    // REQUIRED
-    name: "Marc Lou",
-    // REQUIRED
-    text: "Really easy to use. The tutorials are really useful and explains how everything works. Hope to ship my next project really fast!",
-    // Optional, a statically imported image (usually from your public folder—recommended) or a link to the person's avatar. Shows a fallback letter if not provided
-    img: "https://pbs.twimg.com/profile_images/1514863683574599681/9k7PqDTA_400x400.jpg",
+    username: "aisha_creates",
+    name: "Aisha Chen",
+    role: "Content Creator",
+    text: "TuneForge has completely changed my workflow. I can now create amazing soundtracks for my videos in minutes! The quality is incredible and my audience loves the unique music.",
+    img: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face&auto=format&q=80",
   },
   {
-    username: "the_mcnaveen",
-    name: "Naveen",
-    text: "Setting up everything from the ground up is a really hard, and time consuming process. What you pay for will save your time for sure.",
+    username: "elena_gamedev",
+    name: "Elena Rodriguez",
+    role: "Indie Game Developer",
+    text: "As an indie game dev, music was always a huge bottleneck for me. TuneForge is a lifesaver - I can generate perfect ambient tracks and sound effects that match my game's mood perfectly.",
+    img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop&ixlib=rb-4.0.3",
   },
   {
-    username: "wahab",
-    name: "Wahab Shaikh",
-    text: "Easily saves 15+ hrs for me setting up trivial stuff. Now, I can directly focus on shipping features rather than hours of setting up the same technologies from scratch. Feels like a super power! :D",
+    username: "john_synth",
+    name: "John 'Synth' Williams",
+    role: "Music Producer",
+    text: "I was skeptical about AI music at first, but the quality is just incredible. TuneForge has become a core part of my creative process - it's like having an infinite source of inspiration.",
+    img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150&auto=format&fit=crop&ixlib=rb-4.0.3",
   },
 ];
 
-// A single testimonial, to be rendered in  a list
+// TuneForge Testimonial Card
 const Testimonial = ({ i }: { i: number }) => {
   const testimonial = list[i];
 
@@ -39,71 +41,98 @@ const Testimonial = ({ i }: { i: number }) => {
 
   return (
     <li key={i}>
-      <figure className="relative max-w-lg h-full p-6 md:p-10 bg-base-200 rounded-2xl max-md:text-sm flex flex-col">
-        <blockquote className="relative flex-1">
-          <p className="text-base-content/80 leading-relaxed">
-            {testimonial.text}
-          </p>
-        </blockquote>
-        <figcaption className="relative flex items-center justify-start gap-4 pt-4 mt-4 md:gap-8 md:pt-8 md:mt-8 border-t border-base-content/5">
-          <div className="w-full flex items-center justify-between gap-2">
-            <div>
-              <div className="font-medium text-base-content md:mb-0.5">
-                {testimonial.name}
-              </div>
-              {testimonial.username && (
-                <div className="mt-0.5 text-sm text-base-content/80">
-                  @{testimonial.username}
-                </div>
-              )}
-            </div>
+      <Card className="group h-full cursor-pointer hover:scale-105 transition-all duration-500">
+        <CardContent className="p-8 flex flex-col h-full">
+          {/* Quote Icon */}
+          <div className="mb-6 group-hover:animate-pulse">
+            <svg className="w-8 h-8 text-tuneforge-blue-violet/20 group-hover:text-tuneforge-blue-violet/40 transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+            </svg>
+          </div>
 
-            <div className="overflow-hidden rounded-full bg-base-300 shrink-0">
+          {/* Testimonial Text */}
+          <blockquote className="relative flex-1 mb-6">
+            <p className="font-inter text-gray-700 group-hover:text-gray-800 leading-relaxed text-lg transition-colors duration-300">
+              "{testimonial.text}"
+            </p>
+          </blockquote>
+
+          {/* Author Info */}
+          <figcaption className="flex items-center gap-4">
+            <div className="overflow-hidden rounded-full shrink-0 group-hover:scale-110 transition-transform duration-300">
               {testimonial.img ? (
                 <Image
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover"
-                  src={list[i].img}
-                  alt={`${list[i].name}'s testimonial for ${config.appName}`}
-                  width={48}
-                  height={48}
+                  className="w-14 h-14 rounded-full object-cover group-hover:brightness-110 transition-all duration-300"
+                  src={testimonial.img}
+                  alt={`${testimonial.name}'s testimonial for TuneForge`}
+                  width={56}
+                  height={56}
                 />
               ) : (
-                <span className="w-10 h-10 md:w-12 md:h-12 rounded-full flex justify-center items-center text-lg font-medium bg-base-300">
+                <span className="w-14 h-14 rounded-full flex justify-center items-center text-xl font-medium bg-tuneforge-gradient text-white group-hover:animate-pulse">
                   {testimonial.name.charAt(0)}
                 </span>
               )}
             </div>
-          </div>
-        </figcaption>
-      </figure>
+            
+            <div className="flex-1 group-hover:translate-x-1 transition-transform duration-300">
+              <div className="font-inter font-semibold text-gray-900 group-hover:text-tuneforge-blue-violet transition-colors duration-300">
+                {testimonial.name}
+              </div>
+              <div className="font-inter text-sm text-tuneforge-blue-violet group-hover:text-tuneforge-medium-purple transition-colors duration-300">
+                {testimonial.role}
+              </div>
+              {testimonial.username && (
+                <div className="font-inter text-xs text-gray-500 mt-1 group-hover:text-gray-600 transition-colors duration-300">
+                  @{testimonial.username}
+                </div>
+              )}
+            </div>
+          </figcaption>
+        </CardContent>
+      </Card>
     </li>
   );
 };
 
 const Testimonials3 = () => {
   return (
-    <section id="testimonials">
-      <div className="py-24 px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col text-center w-full mb-20">
-          <div className="mb-8">
-            <h2 className="sm:text-5xl text-4xl font-extrabold text-base-content">
-              212 makers are already shipping faster!
-            </h2>
-          </div>
-          <p className="lg:w-2/3 mx-auto leading-relaxed text-base text-base-content/80">
-            Don&apos;t take our word for it. Here&apos;s what they have to say
-            about ShipFast.
+    <section className="bg-gray-50 py-16 md:py-24" id="testimonials">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <h2 className="font-dm-serif font-bold text-3xl md:text-4xl lg:text-5xl text-gray-900 mb-6 hover:text-tuneforge-blue-violet transition-colors duration-500 cursor-default">
+            Loved by Creators Everywhere
+          </h2>
+          <p className="font-inter text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed hover:text-gray-700 transition-colors duration-300 cursor-default">
+            Don't just take our word for it. Here's what real creators are saying about TuneForge 
+            and how it's transformed their creative process.
           </p>
         </div>
 
+        {/* Testimonials Grid */}
         <ul
           role="list"
-          className="flex flex-col items-center lg:flex-row lg:items-stretch gap-6 lg:gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12"
         >
           {[...Array(3)].map((e, i) => (
             <Testimonial key={i} i={i} />
           ))}
         </ul>
+
+        {/* Bottom Stats */}
+        <div className="text-center mt-16">
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg">
+            <div className="flex -space-x-2">
+              <div className="w-8 h-8 bg-tuneforge-gradient rounded-full border-2 border-white"></div>
+              <div className="w-8 h-8 bg-tuneforge-medium-purple rounded-full border-2 border-white"></div>
+              <div className="w-8 h-8 bg-tuneforge-slate-blue rounded-full border-2 border-white"></div>
+            </div>
+            <p className="font-inter text-gray-700 font-medium">
+              Join 10,000+ creators making amazing music
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

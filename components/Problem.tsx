@@ -1,66 +1,140 @@
-const Arrow = ({ extraStyle }: { extraStyle: string }) => {
+"use client"
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
+// Elegant Problem Card Component
+const ProblemCard = ({ 
+  title, 
+  description, 
+  icon, 
+  stat,
+  delay 
+}: { 
+  title: string; 
+  description: string; 
+  icon: React.ReactNode; 
+  stat: string;
+  delay: number;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
   return (
-    <svg
-      className={`shrink-0 w-12 fill-neutral-content opacity-70 ${extraStyle}`}
-      viewBox="0 0 138 138"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    <div 
+      className={`transform transition-all duration-700 ${
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+      }`}
     >
-      <g>
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M72.9644 5.31431C98.8774 43.8211 83.3812 88.048 54.9567 120.735C54.4696 121.298 54.5274 122.151 55.0896 122.639C55.6518 123.126 56.5051 123.068 56.9922 122.506C86.2147 88.9044 101.84 43.3918 75.2003 3.80657C74.7866 3.18904 73.9486 3.02602 73.3287 3.44222C72.7113 3.85613 72.5484 4.69426 72.9644 5.31431Z"
-        />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M56.5084 121.007C56.9835 118.685 57.6119 115.777 57.6736 115.445C59.3456 106.446 59.5323 97.67 58.4433 88.5628C58.3558 87.8236 57.6824 87.2948 56.9433 87.3824C56.2042 87.4699 55.6756 88.1435 55.7631 88.8828C56.8219 97.7138 56.6432 106.225 55.0203 114.954C54.926 115.463 53.5093 121.999 53.3221 123.342C53.2427 123.893 53.3688 124.229 53.4061 124.305C53.5887 124.719 53.8782 124.911 54.1287 125.015C54.4123 125.13 54.9267 125.205 55.5376 124.926C56.1758 124.631 57.3434 123.699 57.6571 123.487C62.3995 120.309 67.4155 116.348 72.791 113.634C77.9171 111.045 83.3769 109.588 89.255 111.269C89.9704 111.475 90.7181 111.057 90.9235 110.342C91.1288 109.626 90.7117 108.878 89.9963 108.673C83.424 106.794 77.3049 108.33 71.5763 111.223C66.2328 113.922 61.2322 117.814 56.5084 121.007Z"
-        />
-      </g>
-    </svg>
-  );
-};
-const Step = ({ emoji, text }: { emoji: string; text: string }) => {
-  return (
-    <div className="w-full md:w-48 flex flex-col gap-2 items-center justify-center">
-      <span className="text-4xl">{emoji}</span>
-      <h3 className="font-bold">{text}</h3>
+      <Card className="group h-full cursor-pointer hover:scale-105 transition-all duration-500 border-gray-200 hover:border-tuneforge-blue-violet/30">
+        <CardHeader className="text-center pb-4">
+          <div className="w-16 h-16 bg-gray-100 group-hover:bg-tuneforge-blue-violet/10 rounded-full flex items-center justify-center text-gray-600 group-hover:text-tuneforge-blue-violet mx-auto mb-4 transition-all duration-300 group-hover:scale-110">
+            {icon}
+          </div>
+          <CardTitle className="text-xl text-gray-900 group-hover:text-tuneforge-blue-violet transition-colors duration-300">
+            {title}
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent className="text-center">
+          <p className="font-inter text-gray-600 group-hover:text-gray-700 leading-relaxed mb-4 transition-colors duration-300">
+            {description}
+          </p>
+          
+          {/* Stat that appears on hover */}
+          <div className="opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+            <div className="inline-flex items-center px-3 py-2 bg-tuneforge-blue-violet/10 text-tuneforge-blue-violet rounded-full text-sm font-medium">
+              {stat}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-// Problem Agitation: A crucial, yet overlooked, component for a landing page that sells.
-// It goes under your Hero section, and above your Features section.
-// Your Hero section makes a promise to the customer: "Our product will help you achieve XYZ".
-// Your Problem section explains what happens to the customer if its problem isn't solved.
-// The copy should NEVER mention your product. Instead, it should dig the emotional outcome of not fixing a problem.
-// For instance:
-// - Hero: "ShipFast helps developers launch startups fast"
-// - Problem Agitation: "Developers spend too much time adding features, get overwhelmed, and quit." (not about ShipFast at all)
-// - Features: "ShipFast has user auth, Stripe, emails all set up for you"
+// TuneForge Problem Section: Articulate pain points elegantly
 const Problem = () => {
+  const [headerVisible, setHeaderVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setHeaderVisible(true), 200);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <section className="bg-neutral text-neutral-content">
-      <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
-        <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 md:mb-8">
-          80% of startups fail because founders never launch
-        </h2>
-        <p className="max-w-xl mx-auto text-lg opacity-90 leading-relaxed mb-12 md:mb-20">
-          Emails, DNS records, user authentication... There&apos;s so much going
-          on.
-        </p>
+    <section className="bg-gray-50 py-16 md:py-24">
+      {/* Subtle background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-tuneforge-blue-violet/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-tuneforge-medium-purple/5 rounded-full blur-3xl"></div>
+      </div>
 
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6">
-          <Step emoji="🧑‍💻" text="8 hrs to add Stripe" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        {/* Section Header */}
+        <div className={`text-center mb-16 transform transition-all duration-1000 ${headerVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+          <h2 className="font-dm-serif font-bold text-3xl md:text-4xl lg:text-5xl text-gray-900 mb-6 hover:text-tuneforge-blue-violet transition-colors duration-500 cursor-default">
+            Tired of the Old Way of Making Music?
+          </h2>
+          <p className="font-inter text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed hover:text-gray-700 transition-colors duration-300 cursor-default">
+            Traditional music creation comes with barriers that stifle creativity and drain resources. 
+            Sound familiar?
+          </p>
+        </div>
 
-          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
+        {/* Problem Cards */}
+        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-16">
+          <ProblemCard
+            title="Expensive Software & Royalties"
+            description="Traditional music production requires costly software licenses, expensive equipment, and licensing tracks can drain your budget before you even start creating."
+            icon={
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+              </svg>
+            }
+            stat="💸 Costs can exceed $1000+ per year"
+            delay={300}
+          />
 
-          <Step emoji="😮‍💨" text="Struggle to find time" />
+          <ProblemCard
+            title="The Endless Learning Curve"
+            description="Mastering complex music software takes years of practice. Your creative ideas shouldn't have to wait while you learn technical skills that have nothing to do with music."
+            icon={
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+            }
+            stat="⏰ 2-5 years to become proficient"
+            delay={600}
+          />
 
-          <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
+          <ProblemCard
+            title="Stuck in a Creative Rut?"
+            description="Finding the right sound, melody, or inspiration can be frustrating and time-consuming. Writer's block hits everyone, but it shouldn't stop your projects."
+            icon={
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" />
+              </svg>
+            }
+            stat="🚫 70% of projects never finish"
+            delay={900}
+          />
+        </div>
 
-          <Step emoji="😔" text="Quit project" />
+        {/* Bottom CTA hint */}
+        <div className="text-center">
+          <div className="inline-block p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-tuneforge-blue-violet/30">
+            <p className="font-dm-serif text-xl md:text-2xl text-gray-900 font-bold mb-2 group-hover:text-tuneforge-blue-violet transition-colors duration-300">
+              What if there was a better way?
+            </p>
+            <p className="font-inter text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+              Discover how TuneForge changes everything 👇
+            </p>
+          </div>
         </div>
       </div>
     </section>
