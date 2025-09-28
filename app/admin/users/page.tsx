@@ -14,6 +14,9 @@ import {
   ChevronRightIcon
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import UserDetailModal from "@/components/UserDetailModal";
+import EditUserModal from "@/components/EditUserModal";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface User {
   id: string;
@@ -38,72 +41,74 @@ export default function AdminUsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<keyof User>("signupDate");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [error, setError] = useState<string | null>(null);
+  
+  // Modal states
+  const [userDetailModal, setUserDetailModal] = useState<{
+    isOpen: boolean;
+    userId: string | null;
+  }>({ isOpen: false, userId: null });
+  
+  const [editUserModal, setEditUserModal] = useState<{
+    isOpen: boolean;
+    user: User | null;
+  }>({ isOpen: false, user: null });
+  
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    action: (() => void) | null;
+    confirmText: string;
+    confirmColor: 'red' | 'blue' | 'green' | 'orange';
+    loading: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    action: null,
+    confirmText: 'Confirm',
+    confirmColor: 'red',
+    loading: false
+  });
 
   const usersPerPage = 10;
 
-  // Mock data - in real implementation, fetch from API
+  // Fetch real users from API
   useEffect(() => {
-    setTimeout(() => {
-      setUsers([
-        {
-          id: "1",
-          name: "John Doe",
-          email: "john@example.com",
-          role: "PAID",
-          signupDate: "2024-01-15T10:30:00Z",
-          totalSpent: 49.99,
-          songsGenerated: 23,
-          lastActive: "2024-01-20T14:22:00Z",
-          status: "active"
-        },
-        {
-          id: "2",
-          name: "Sarah Wilson",
-          email: "sarah@example.com",
-          role: "FREE",
-          signupDate: "2024-01-18T09:15:00Z",
-          totalSpent: 0,
-          songsGenerated: 5,
-          lastActive: "2024-01-19T11:45:00Z",
-          status: "active"
-        },
-        {
-          id: "3",
-          name: "Mike Johnson",
-          email: "mike@example.com",
-          role: "MAX",
-          signupDate: "2024-01-10T16:20:00Z",
-          totalSpent: 199.99,
-          songsGenerated: 87,
-          lastActive: "2024-01-21T08:30:00Z",
-          status: "active"
-        },
-        {
-          id: "4",
-          name: "Emma Davis",
-          email: "emma@example.com",
-          role: "ADMIN",
-          signupDate: "2024-01-05T12:00:00Z",
-          totalSpent: 0,
-          songsGenerated: 156,
-          lastActive: "2024-01-21T16:15:00Z",
-          status: "active"
-        },
-        {
-          id: "5",
-          name: "Alex Brown",
-          email: "alex@example.com",
-          role: "PAID",
-          signupDate: "2024-01-12T14:45:00Z",
-          totalSpent: 24.99,
-          songsGenerated: 12,
-          lastActive: "2024-01-18T10:20:00Z",
-          status: "suspended"
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      setError(null);
+      console.log('👥 ADMIN: Fetching users from API...');
+      const response = await fetch('/api/admin/users', {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ ADMIN: Received users:', data.users?.length || 0);
+        setUsers(data.users || []);
+      } else if (response.status === 403) {
+        console.log('❌ ADMIN: Access denied');
+        setError('You do not have permission to access user management.');
+        setUsers([]);
+      } else {
+        console.error('❌ ADMIN: Failed to fetch users:', response.status);
+        setError('Failed to load users. Please try again.');
+        setUsers([]);
+      }
+    } catch (error) {
+      console.error('❌ ADMIN: Error fetching users:', error);
+      setError('An error occurred while loading users.');
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (session?.user?.role !== "ADMIN") {
     return (
@@ -182,33 +187,100 @@ export default function AdminUsersPage() {
   };
 
   const handleUserAction = (userId: string, action: string) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
     switch (action) {
       case "view":
-        // Navigate to user detail page
-        console.log("View user:", userId);
+        setUserDetailModal({ isOpen: true, userId });
         break;
+        
       case "edit":
-        // Open edit modal or navigate to edit page
-        console.log("Edit user:", userId);
+        setEditUserModal({ isOpen: true, user });
         break;
+        
       case "suspend":
-        if (confirm("Are you sure you want to suspend this user?")) {
-          setUsers(prev => prev.map(user => 
-            user.id === userId ? { ...user, status: "suspended" as const } : user
-          ));
-        }
+        setConfirmDialog({
+          isOpen: true,
+          title: 'Suspend User',
+          message: `Are you sure you want to suspend ${user.name}?\n\nThis will:\n• Prevent the user from accessing their account\n• Stop all active music generation\n• Require admin action to reactivate`,
+          confirmText: 'Suspend User',
+          confirmColor: 'orange',
+          loading: false,
+          action: () => performUserAction(userId, 'suspend')
+        });
         break;
+        
       case "activate":
-        setUsers(prev => prev.map(user => 
-          user.id === userId ? { ...user, status: "active" as const } : user
-        ));
+        setConfirmDialog({
+          isOpen: true,
+          title: 'Activate User',
+          message: `Are you sure you want to activate ${user.name}?\n\nThis will restore full account access.`,
+          confirmText: 'Activate User',
+          confirmColor: 'green',
+          loading: false,
+          action: () => performUserAction(userId, 'activate')
+        });
         break;
+        
       case "delete":
-        if (confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
-          setUsers(prev => prev.filter(user => user.id !== userId));
-        }
+        setConfirmDialog({
+          isOpen: true,
+          title: 'Delete User',
+          message: `⚠️ WARNING: This action cannot be undone!\n\nDeleting ${user.name} will:\n• Permanently delete their account\n• Delete all their songs (${user.songsGenerated} songs)\n• Remove all associated data\n\nAre you absolutely sure?`,
+          confirmText: 'Delete User',
+          confirmColor: 'red',
+          loading: false,
+          action: () => performUserAction(userId, 'delete')
+        });
         break;
     }
+  };
+
+  const performUserAction = async (userId: string, action: string) => {
+    setConfirmDialog(prev => ({ ...prev, loading: true }));
+    
+    try {
+      if (action === 'delete') {
+        const response = await fetch(`/api/admin/users/${userId}`, {
+          method: 'DELETE',
+        });
+        
+        if (response.ok) {
+          setUsers(prev => prev.filter(user => user.id !== userId));
+          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }));
+        } else {
+          throw new Error('Failed to delete user');
+        }
+      } else {
+        // Suspend or activate
+        const response = await fetch(`/api/admin/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUsers(prev => prev.map(user => 
+            user.id === userId ? data.user : user
+          ));
+          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }));
+        } else {
+          throw new Error(`Failed to ${action} user`);
+        }
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing user:`, error);
+      alert(`Failed to ${action} user. Please try again.`);
+      setConfirmDialog(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const handleUserUpdated = (updatedUser: User) => {
+    setUsers(prev => prev.map(user => 
+      user.id === updatedUser.id ? updatedUser : user
+    ));
   };
 
   return (
@@ -220,10 +292,19 @@ export default function AdminUsersPage() {
             <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
             <p className="text-gray-600 mt-2">Manage and monitor user accounts</p>
           </div>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
-            <UserPlusIcon className="w-4 h-4" />
-            Add User
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={fetchUsers}
+              disabled={loading}
+              className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+            >
+              🔄 Refresh
+            </button>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+              <UserPlusIcon className="w-4 h-4" />
+              Add User
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -300,6 +381,29 @@ export default function AdminUsersPage() {
             <div className="p-8 text-center">
               <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-gray-600">Loading users...</p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <div className="text-red-600 mb-4">⚠️</div>
+              <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Users</h3>
+              <p className="text-red-700 mb-4">{error}</p>
+              <button
+                onClick={fetchUsers}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : paginatedUsers.length === 0 ? (
+            <div className="p-8 text-center">
+              <div className="text-gray-400 mb-4">👥</div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Users Found</h3>
+              <p className="text-gray-600">
+                {searchTerm || roleFilter !== "all" || statusFilter !== "all"
+                  ? "Try adjusting your search or filter criteria"
+                  : "No users have signed up yet"
+                }
+              </p>
             </div>
           ) : (
             <>
@@ -499,6 +603,31 @@ export default function AdminUsersPage() {
             </>
           )}
         </div>
+
+        {/* Modals */}
+        <UserDetailModal
+          isOpen={userDetailModal.isOpen}
+          onClose={() => setUserDetailModal({ isOpen: false, userId: null })}
+          userId={userDetailModal.userId}
+        />
+
+        <EditUserModal
+          isOpen={editUserModal.isOpen}
+          onClose={() => setEditUserModal({ isOpen: false, user: null })}
+          user={editUserModal.user}
+          onUserUpdated={handleUserUpdated}
+        />
+
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          onClose={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}
+          onConfirm={confirmDialog.action || (() => {})}
+          title={confirmDialog.title}
+          message={confirmDialog.message}
+          confirmText={confirmDialog.confirmText}
+          confirmColor={confirmDialog.confirmColor}
+          loading={confirmDialog.loading}
+        />
       </div>
     </DashboardLayout>
   );

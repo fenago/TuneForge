@@ -84,15 +84,20 @@ Music that puts a smile on my face`;
       console.log('🔧 Structured prompt created:', structuredPrompt.substring(0, 200) + '...');
     }
     
-    const musicRequest = {
-      task_type: body.task_type || 'create_music',
+    const musicRequest: any = {
+      task_type: body.persona_id ? 'persona_music' : (body.task_type || 'create_music'),
       custom_mode: body.custom_mode,
       prompt: structuredPrompt,
       title: body.title,
       tags: body.tags,
-      persona_id: body.persona_id,
       mv: body.mv || 'chirp-v3-5'
     };
+
+    // Add persona_id if provided
+    if (body.persona_id) {
+      musicRequest.persona_id = body.persona_id;
+      console.log('🎭 Using persona:', body.persona_id);
+    }
     console.log('🔧 Final Suno request:', JSON.stringify(musicRequest, null, 2));
 
     // Make the API call using Suno API
@@ -145,6 +150,7 @@ Music that puts a smile on my face`;
     try {
       const connectMongo = (await import('@/libs/mongoose')).default;
       const User = (await import('@/models/User')).default;
+      const Persona = (await import('@/models/Persona')).default;
       
       await connectMongo();
       const user = await User.findOne({ email: session.user.email });
@@ -161,10 +167,28 @@ Music that puts a smile on my face`;
           title: body.title,
           tags: body.tags,
           model: body.mv,
+          personaId: body.persona_id,
           createdAt: new Date()
         });
         
         await user.save();
+
+        // Update persona usage if persona was used
+        if (body.persona_id) {
+          try {
+            const persona = await Persona.findOne({ 
+              userId: user._id, 
+              personaId: body.persona_id 
+            });
+            if (persona) {
+              await persona.recordUsage();
+              console.log('🎭 Persona usage recorded:', persona.name);
+            }
+          } catch (personaError) {
+            console.error('❌ Failed to update persona usage:', personaError);
+          }
+        }
+        
         console.log('✅ Task saved for background completion:', result.task_id);
       }
     } catch (taskError) {

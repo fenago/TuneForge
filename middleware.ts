@@ -7,15 +7,15 @@ export default withAuth(
     const token = req.nextauth.token;
     const { pathname } = req.nextUrl;
 
-    // Public routes that don't need authentication
-    const publicRoutes = ["/", "/login", "/api/auth"];
-    if (publicRoutes.some(route => pathname.startsWith(route))) {
-      return NextResponse.next();
-    }
-
-    // If no token, redirect to login
+    // If no token, redirect to login for protected routes only
     if (!token) {
-      return NextResponse.redirect(new URL("/login", req.url));
+      // Protected routes that require authentication
+      const protectedRoutes = ["/dashboard", "/admin", "/profile", "/library"];
+      if (protectedRoutes.some(route => pathname.startsWith(route))) {
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
+      // Allow access to public routes without token
+      return NextResponse.next();
     }
 
     // Admin routes - require ADMIN role
@@ -36,9 +36,23 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => {
-        // Allow access if token exists (detailed checks in middleware function)
-        return !!token;
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
+        
+        // Public routes - allow access without authentication
+        const publicRoutes = ["/", "/login", "/api/auth", "/pricing", "/about", "/contact"];
+        if (publicRoutes.some(route => pathname === route || pathname.startsWith(route))) {
+          return true;
+        }
+
+        // Protected routes - require authentication
+        const protectedRoutes = ["/dashboard", "/admin", "/profile", "/library"];
+        if (protectedRoutes.some(route => pathname.startsWith(route))) {
+          return !!token;
+        }
+
+        // Default: allow access (for other routes like static assets)
+        return true;
       },
     },
   }

@@ -9,6 +9,7 @@ import Testimonials3 from "@/components/Testimonials3";
 import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
+import AnnouncementsBanner from "@/components/AnnouncementsBanner";
 import { Metadata } from 'next';
 
 // Add metadata for SEO
@@ -26,6 +27,9 @@ export default function Home(): JSX.Element {
       </Suspense>
       <main>
         {/* TuneForge - AI-powered music creation platform */}
+        <div className="container mx-auto px-4">
+          <AnnouncementsBanner />
+        </div>
         <Hero />
         <Problem />
         <Solution />

@@ -1,108 +1,194 @@
+"use client";
+
+import { useState, useEffect } from 'react';
 import Link from "next/link";
-import { getSEOTags } from "@/libs/seo";
-import config from "@/config";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-// CHATGPT PROMPT TO GENERATE YOUR PRIVACY POLICY — replace with your own data 👇
-
-// 1. Go to https://chat.openai.com/
-// 2. Copy paste bellow
-// 3. Replace the data with your own (if needed)
-// 4. Paste the answer from ChatGPT directly in the <pre> tag below
-
-// You are an excellent lawyer.
-
-// I need your help to write a simple privacy policy for my website. Here is some context:
-// - Website: https://fenago.com
-// - Name: FeNAgO
-// - Description: A Next.js agentic SaaS boilerplate to help entrepreneurs build AI-powered applications more efficiently
-// - User data collected: name, email and payment information
-// - Non-personal data collection: web cookies
-// - Purpose of Data Collection: Order processing
-// - Data sharing: we do not share the data with any other parties
-// - Children's Privacy: we do not collect any data from children
-// - Updates to the Privacy Policy: users will be updated by email
-// - Contact information: support@fenago.com
-
-// Please write a simple privacy policy for my site. Add the current date.  Do not add or explain your reasoning. Answer:
-
-export const metadata = getSEOTags({
-  title: `Privacy Policy | ${config.appName}`,
-  canonicalUrlRelative: "/privacy-policy",
-});
+interface ContentItem {
+  id: string;
+  title: string;
+  content: string;
+  publishedAt: string;
+}
 
 const PrivacyPolicy = () => {
+  const [content, setContent] = useState<ContentItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchPrivacyPolicy();
+  }, []);
+
+  const fetchPrivacyPolicy = async () => {
+    try {
+      console.log(' Fetching privacy policy...');
+      const response = await fetch('/api/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: 'privacy-policy' })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setContent(data.content);
+        console.log('Privacy policy loaded');
+      } else if (response.status === 404) {
+        // Fallback to default content if none exists in CMS
+        setContent({
+          id: 'default',
+          title: 'Privacy Policy',
+          content: getDefaultPrivacyPolicy(),
+          publishedAt: new Date().toISOString()
+        });
+      } else {
+        throw new Error('Failed to load privacy policy');
+      }
+    } catch (error) {
+      console.error('Error loading privacy policy:', error);
+      setError('Failed to load privacy policy');
+      // Fallback to default content
+      setContent({
+        id: 'default',
+        title: 'Privacy Policy',
+        content: getDefaultPrivacyPolicy(),
+        publishedAt: new Date().toISOString()
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDefaultPrivacyPolicy = () => {
+    return `Last Updated: ${new Date().toLocaleDateString()}
+
+Thank you for using TuneForge ("we," "us," or "our"). This Privacy Policy explains how we collect, use, and protect your information when you use our AI music generation platform.
+
+**1. Information We Collect**
+
+• **Account Information**: Name, email address, and profile information
+• **Usage Data**: Songs generated, prompts used, and platform interactions  
+• **Payment Information**: Billing details processed securely through Stripe
+• **Technical Data**: IP address, browser type, and device information
+
+**2. How We Use Your Information**
+
+• Provide and improve our AI music generation services
+• Process payments and manage your account
+• Send important updates and support communications
+• Analyze usage to enhance platform performance
+
+**3. Data Protection**
+
+• Your payment information is processed securely by Stripe
+• We use industry-standard encryption to protect your data
+• We never sell your personal information to third parties
+• Your generated music remains private unless you choose to share it
+
+**4. AI and Music Generation**
+
+• Your music prompts may be used to improve our AI models
+• Generated songs are stored securely and remain your intellectual property
+• You control the privacy settings of your created content
+
+**5. Cookies and Analytics**
+
+• We use essential cookies for platform functionality
+• Analytics help us understand how users interact with TuneForge
+• You can manage cookie preferences in your browser
+
+**6. Your Rights**
+
+• Access, update, or delete your account information
+• Download your generated music at any time
+• Request data deletion (subject to legal requirements)
+
+**7. Children's Privacy**
+
+TuneForge is not intended for users under 13 years of age. We do not knowingly collect information from children.
+
+**8. Contact Information**
+
+For privacy-related questions or requests:
+Email: privacy@tuneforge.ai
+
+This policy may be updated periodically. Significant changes will be communicated via email.`;
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
+            <div className="space-y-4">
+              <div className="h-4 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="max-w-xl mx-auto">
-      <div className="p-5">
-        <Link href="/" className="btn btn-ghost">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5"
+    <main className="min-h-screen bg-gray-50">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <Link 
+            href="/" 
+            className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6 transition-colors"
           >
-            <path
-              fillRule="evenodd"
-              d="M15 10a.75.75 0 01-.75.75H7.612l2.158 1.96a.75.75 0 11-1.04 1.08l-3.5-3.25a.75.75 0 010-1.08l3.5-3.25a.75.75 0 111.04 1.08L7.612 9.25h6.638A.75.75 0 0115 10z"
-              clipRule="evenodd"
-            />
-          </svg>{" "}
-          Back
-        </Link>
-        <h1 className="text-3xl font-extrabold pb-6">
-          Privacy Policy for {config.appName}
-        </h1>
+            <ArrowLeftIcon className="w-4 h-4 mr-2" />
+            Back to TuneForge
+          </Link>
+          
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            {content?.title || 'Privacy Policy'}
+          </h1>
+          
+          {content?.publishedAt && (
+            <p className="text-gray-600">
+              Last updated: {new Date(content.publishedAt).toLocaleDateString()}
+            </p>
+          )}
+        </div>
 
-        <pre
-          className="leading-relaxed whitespace-pre-wrap"
-          style={{ fontFamily: "sans-serif" }}
-        >
-          {`Last Updated: May 5, 2025
+        {/* Content */}
+        <div className="bg-white rounded-lg shadow-sm p-8">
+          {error ? (
+            <div className="text-red-600 text-center py-8">
+              <p className="mb-4">{error}</p>
+              <button 
+                onClick={fetchPrivacyPolicy}
+                className="text-blue-600 hover:text-blue-700 underline"
+              >
+                Try again
+              </button>
+            </div>
+          ) : (
+            <div className="prose prose-gray max-w-none">
+              <div 
+                className="whitespace-pre-line leading-relaxed"
+                style={{ fontFamily: 'inherit' }}
+              >
+                {content?.content}
+              </div>
+            </div>
+          )}
+        </div>
 
-Thank you for visiting FeNAgO ("we," "us," or "our"). This Privacy Policy outlines how we collect, use, and protect your personal and non-personal information when you use our website located at https://fenago.com (the "Website").
-
-By accessing or using the Website, you agree to the terms of this Privacy Policy. If you do not agree with the practices described in this policy, please do not use the Website.
-
-1. Information We Collect
-
-1.1 Personal Data
-
-We collect the following personal information from you:
-
-Name: We collect your name to personalize your experience and communicate with you effectively.
-Email: We collect your email address to send you important information regarding your orders, updates, and communication.
-Payment Information: We collect payment details to process your orders securely. However, we do not store your payment information on our servers. Payments are processed by trusted third-party payment processors.
-
-1.2 Non-Personal Data
-
-We may use web cookies and similar technologies to collect non-personal information such as your IP address, browser type, device information, and browsing patterns. This information helps us to enhance your browsing experience, analyze trends, and improve our services.
-
-2. Purpose of Data Collection
-
-We collect and use your personal data for the sole purpose of order processing. This includes processing your orders, sending order confirmations, providing customer support, and keeping you updated about the status of your orders.
-
-3. Data Sharing
-
-We do not share your personal data with any third parties except as required for order processing (e.g., sharing your information with payment processors). We do not sell, trade, or rent your personal information to others.
-
-4. Children's Privacy
-
-FeNAgO is not intended for children under the age of 13. We do not knowingly collect personal information from children. If you are a parent or guardian and believe that your child has provided us with personal information, please contact us at the email address provided below.
-
-5. Updates to the Privacy Policy
-
-We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. Any updates will be posted on this page, and we may notify you via email about significant changes.
-
-6. Contact Information
-
-If you have any questions, concerns, or requests related to this Privacy Policy, you can contact us at:
-
-Email: support@fenago.com
-
-For all other inquiries, please visit our Contact Us page on the Website.
-
-By using FeNAgO, you consent to the terms of this Privacy Policy.`}
-        </pre>
+        {/* Footer */}
+        <div className="mt-8 text-center text-gray-500 text-sm">
+          <p>
+            Questions about this privacy policy? Contact us at{' '}
+            <a href="mailto:privacy@tuneforge.ai" className="text-blue-600 hover:text-blue-700">
+              privacy@tuneforge.ai
+            </a>
+          </p>
+        </div>
       </div>
     </main>
   );

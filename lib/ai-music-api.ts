@@ -37,8 +37,30 @@ export interface GetTaskResponse {
 }
 
 export interface CreditsResponse {
-  credits: number;
-  extra_credits: number;
+  success: boolean;
+  grand_total: number;
+  providers: {
+    sunoapi_com: {
+      success: boolean;
+      credits: number;
+      extra_credits: number;
+      total: number;
+      error?: string;
+    };
+    sunoapi_org: {
+      success: boolean;
+      credits: number;
+      extra_credits: number;
+      total: number;
+      error?: string;
+    };
+  };
+  summary: {
+    sunoapi_com_total: number;
+    sunoapi_org_total: number;
+    combined_total: number;
+  };
+  timestamp: string;
 }
 
 // Note: These functions will use the AI Music API MCP server

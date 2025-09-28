@@ -267,6 +267,67 @@ export default function LibraryPage() {
     });
   };
 
+  const handleDownload = async (song: Song) => {
+    const audioUrl = song.audioUrl || song.files?.audioUrl;
+    if (!audioUrl) {
+      alert('No audio file available for download');
+      return;
+    }
+
+    try {
+      console.log('🔽 LIBRARY: Starting download for:', song.title);
+      
+      // Show loading state (optional - you could add a loading indicator)
+      const downloadButton = document.activeElement as HTMLButtonElement;
+      const originalContent = downloadButton?.innerHTML;
+      if (downloadButton) {
+        downloadButton.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full"></div>';
+        downloadButton.disabled = true;
+      }
+
+      // Fetch the audio file as a blob
+      const response = await fetch(audioUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch audio: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a temporary download link
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${song.title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`;
+      document.body.appendChild(link);
+      
+      // Trigger the download
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      console.log('✅ LIBRARY: Download completed for:', song.title);
+
+      // Restore button state
+      if (downloadButton && originalContent) {
+        downloadButton.innerHTML = originalContent;
+        downloadButton.disabled = false;
+      }
+
+    } catch (error) {
+      console.error('❌ LIBRARY: Download failed:', error);
+      alert(`Failed to download ${song.title}. Please try again.`);
+      
+      // Restore button state on error
+      const downloadButton = document.activeElement as HTMLButtonElement;
+      if (downloadButton) {
+        downloadButton.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>';
+        downloadButton.disabled = false;
+      }
+    }
+  };
+
   const genres = ["all", "pop", "jazz", "electronic", "rock", "hip-hop", "classical"];
 
   return (
@@ -376,14 +437,14 @@ export default function LibraryPage() {
                         )}
                       </button>
                       
-                      <a
-                        href={song.audioUrl || song.files?.audioUrl}
-                        download={`${song.title}.mp3`}
-                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
+                      <button
+                        onClick={() => handleDownload(song)}
+                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors disabled:opacity-50"
                         title="Download"
+                        disabled={!song.audioUrl && !song.files?.audioUrl}
                       >
                         <ArrowDownTrayIcon className="w-5 h-5" />
-                      </a>
+                      </button>
                       
                       <button
                         onClick={() => handleDeleteClick(song.id, song.title)}

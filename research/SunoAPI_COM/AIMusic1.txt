@@ -1,0 +1,155 @@
+# Introduction
+
+# Getting started
+
+[AI Music API](https://sunoapi.com/) use 3 model to generate music(suno,riffusion,nuro),you can use these 3 AI music generation models to generate any song, and they all support multi-language, vocal/pure music song generation
+
+Custom Mode: Generate music based on specific inputs like lyrics, style, and mood, tailored to your needs.
+Random Mode: Automatically create unique music with minimal input for a more spontaneous feel.
+Integrate [AI Music API](https://sunoapi.com/) into your app to add high-quality, customizable music that will impress your users and enhance their experience.
+
+
+<div className="my-4">
+  <div>
+    <h3 className="-mt-0 text-xl font-bold text-blue-400">Features</h3>
+    <div className="mt-2 max-w-xl text-base font-bold">
+
+      - Quick and Easy Setup
+      - Packed with Full Features (create,cover,extend,replace section,stem...)
+      - No watermark
+      - General Terms and Conditions
+      - Continuous Updates
+      - Tech Support at No Extra Cost
+
+    </div>
+
+  </div>
+</div>
+
+---
+
+# Authorization
+
+To begin using MusicAPI, you'll first need to get a 'Bearer Token'.
+You can find this token code in your [Account Setup](https://sunoapi.com/dashboard/apikey) after you've signed up, and paid a subscription.
+This code is necessary whenever you make requests to the API.
+
+# Rate Limiting
+
+- For free users, the maximum concurrency is 2 requests.
+- Starter plan users can make up to 10 concurrent requests.
+- Pro plan users can make up to 50 concurrent requests.
+- Users on custom subscription plans have no concurrency limit.
+
+This system helps ensure security by preventing misuse or abuse of the service.
+
+
+# Note
+
+- All requests must be made over HTTPS. Calls made over plain HTTP will fail.
+- All requests must be made with a valid Bearer Token. Calls made without a valid token will fail.
+
+# Feedback
+
+If you have any feedback or suggestions, please contact us on our [Discord channel](https://discord.gg/UFT2J2XK7d). Join to get the latest updates and technical support. You can also find the latest features and code examples there.
+
+# Credits Usage Guide
+
+# AI Music API Credits Usage Guide
+
+Our credit system is unified across all supported models, ensuring a seamless experience for managing your usage. Below is a detailed explanation of how credits work:
+
+## 1. Unified Credit System
+Credits are universally applicable for music generation with the **Suno**, **Riffusion**, and **Nuro** models. Each API call consumes credits based on the type of service you are using.
+
+## 2. Extra Credits
+If your monthly subscription credits run out, you can purchase extra credits as needed. We provide a purchase-by-volume feature: 0.08$ / 10 credits.
+
+- **Purchase Extra Credits**: Visit our [extra credits purchase page](https://sunoapi.com/dashboard/usage).  
+- **Usage**: Extra credits are consumed **before** your subscription credits and **do not expire**, offering flexible usage.  
+- **Requirement**: You must have an active subscription to use extra credits.
+
+## 3. Monthly Subscription Credits
+Your monthly subscription credits reset at the start of each billing cycle. **Unused credits do not carry over** to the next cycle.
+
+## 4. Credit Consumption Rules
+Here’s a breakdown of the credits required per API call:
+
+### Suno 
+- **All models**: 10 credits per API call 
+  - Each API call generates **2 songs**.
+
+### Riffusion 
+- **All models**: 10 credits per API call 
+  - Each API call generates **2 songs**.
+
+### Nuro 
+- **All models**: 10 credits per API call 
+  - Each API call generates **1 song**.
+
+### Lyrics Generation
+- **All models**: 2 credits per API call  
+  - Each API call generates **2 versions of lyrics**.
+
+### Upload Local Music
+- **All models**: 2 credits per API call  
+  - Used for uploading local music for any model.
+
+### Get Wav Url (suno)
+- **All models**: 2 credits per API call
+  - get wav url by song id. 
+
+### Stems Basic (suno)
+- **All models**: 10 credits per API call  
+  - get 4 tracks by song id.
+### Stems Full (suno)
+- **All models**: 50 credits per API call 
+  - get 24 tracks by song id.
+  
+## 5. Important Notes
+1. **Credits vs Extra Credits**: 
+   - **Credits** are refreshed every month as part of your subscription. 
+   - **Extra credits** are purchased separately, do not expire, and are consumed **before** subscription credits.
+   - Extra credits can only be purchased with an active subscription.
+
+2. Credits can be used for **any model and any operation**, providing flexibility across different services.
+# Error handling
+
+
+## 🔹 Error Types
+
+| **Error Type**       | **Error Code** | **Error Message** |
+|----------------------|--------------|------------------|
+| **Validation Error** | 400 | `"The 'mv' field is invalid. The model should be 'chirp-v3-5','chirp-v4' or 'chirp-v4-5'."` |
+| **Validation Error** | 400 | `"The 'persona_id' field is required when task_type = persona_music."` |
+| **Validation Error** | 400 | `"The 'make_instrumental' field should be boolean."` |
+| **Validation Error** | 400 | `"The 'custom_mode' field should be boolean."` |
+| **Validation Error** | 400 | `"The prompt character length should be less than 3000."` |
+| **Validation Error** | 400 | `"The 'gpt_description_prompt' character length should be less than 200."` |
+| **Validation Error** | 400 | `"The tags character length should be less than 200."` |
+| **Validation Error** | 400 | `"The title character length should be less than 80."` |
+| **Validation Error** | 400 | `"description is required."` |
+| **Validation Error** | 400 | `"The description character length should be less than 120."` |
+| **Validation Error** | 400 | `"name and continue_clip_id are required fields."` |
+| **Validation Error** | 400 | `"The name character length should be less than 80."` |
+| **Validation Error** | 400 | `"The description character length should be less than 200."` |
+| **Validation Error** | 400 | `"task not found."` |
+| **Validation Error** | 400 | `"missing task id."` |
+| **Unauthorized**     | 401 | `"Authorization header is missing."` |
+| **Unauthorized**     | 401 | `"Invalid authorization format."` |
+| **Forbidden**        | 403 | `"The remaining credits are not enough. You can buy more one-time credit packs or subscribe."` |
+| **Forbidden**        | 403 | `"You do not have an active subscription. Please check whether your renewal was successful."` |
+| **Forbidden**        | 403 | `"The lyrics format is invalid. Please check and try again."` |
+| **Forbidden**        | 403 | `"The lyrics contain copyrighted content: 'specificError'. Please use original lyrics."` |
+| **Forbidden**        | 403 | `"The lyrics contain inappropriate content: 'specificError'."` |
+| **Forbidden**        | 403 | `"The song description needs moderation review."` |
+| **Forbidden**        | 403 | `"The song description contains artist names: 'specificError' which is not allowed."` |
+| **Forbidden**        | 403 | `"The song description contains producer tags: 'specificError' which is not allowed."` |
+| **Not Found**        | 400 | `"task not found."` |
+| **Timeout**          | 504 | `"Task failed due to timeout. Credits were previously refunded."` |
+| **Server Error**     | 500 | `"Internal Server Error."` |
+
+
+📌 **Ensure to handle these errors properly in your integration for a smooth user experience.**
+
+

@@ -69,6 +69,39 @@ export async function POST(request: NextRequest) {
       return extension || '';
     };
 
+    // Helper function to generate tempo based on genre
+    const generateTempo = (genre: string): number => {
+      const tempoRanges: Record<string, [number, number]> = {
+        'electronic': [120, 140],
+        'rock': [110, 140], 
+        'pop': [100, 130],
+        'hip-hop': [80, 120],
+        'jazz': [80, 200],
+        'classical': [60, 120],
+        'country': [90, 140],
+        'r&b': [70, 120],
+        'reggae': [60, 90],
+        'folk': [80, 120],
+        'blues': [70, 120],
+        'metal': [120, 180],
+        'punk': [150, 200],
+        'indie': [90, 140],
+        'ambient': [60, 100],
+        'house': [120, 130],
+        'techno': [120, 150],
+        'dubstep': [140, 150]
+      };
+      
+      const range = tempoRanges[genre] || [90, 140];
+      return Math.floor(Math.random() * (range[1] - range[0]) + range[0]);
+    };
+
+    // Helper function to generate musical key
+    const generateKey = (): string => {
+      const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      return keys[Math.floor(Math.random() * keys.length)];
+    };
+
     // Helper function to generate realistic music analysis values
     const generateMusicAnalysis = (genre: string, mood: string) => {
       // Base values influenced by genre and mood
@@ -120,9 +153,9 @@ export async function POST(request: NextRequest) {
       aiModel: body.aiModel || body.mv || 'chirp-v3-5',
       
       generationParams: {
-        style: body.style,
-        tempo: body.tempo,
-        key: body.key,
+        style: body.style || genre,
+        tempo: body.tempo || generateTempo(genre),
+        key: body.key || generateKey(),
         instruments: body.instruments || [],
       },
       

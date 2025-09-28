@@ -1,0 +1,63 @@
+# get-credits
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/get-credits:
+    get:
+      summary: get-credits
+      deprecated: false
+      description: ''
+      tags: []
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+                x-apidog-orders: []
+              example:
+                credits: 50
+                extra_credits: 0
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: ''
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105494-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+
+var myHeaders = new Headers();
+myHeaders.append("Authorization", "Bearer <token>");
+
+var requestOptions = {
+   method: 'GET',
+   headers: myHeaders,
+   redirect: 'follow'
+};
+
+fetch("https://api.sunoapi.com/api/v1/get-credits", requestOptions)
+   .then(response => response.text())
+   .then(result => console.log(result))
+   .catch(error => console.log('error', error));

@@ -1,0 +1,169 @@
+# Make Lyrics
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/lyrics:
+    post:
+      summary: Make Lyrics
+      deprecated: false
+      description: The core API to generate your music lyrics.
+      tags:
+        - lyrics generation
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: lyrics desctiption
+              required:
+                - description
+              x-apidog-orders:
+                - description
+            example:
+              description: a song about sky
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    description: the HTTP status code of the response
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        lyrics:
+                          type: string
+                      required:
+                        - title
+                        - lyrics
+                      x-apidog-orders:
+                        - title
+                        - lyrics
+                  message:
+                    type: string
+                    description: the message of the response
+                required:
+                  - code
+                  - results
+                  - message
+                x-apidog-orders:
+                  - code
+                  - results
+                  - message
+              example:
+                code: 200
+                results:
+                  - title: Whisper of Shadows
+                    lyrics: |-
+                      [Verse]
+                      In the alley dark as night
+                      Lonely whispers out of sight
+                      I hear footsteps cold and tight
+                      Echoes of a fearsome fright
+
+                      [Verse 2]
+                      Candles flicker in the rain
+                      Shadows dance they feel my pain
+                      Hollow hearts and silent chains
+                      In this void we all remain
+
+                      [Chorus]
+                      Screaming in the silence deep
+                      Monsters in my tangled sleep
+                      In the dark where secrets creep
+                      Promises we couldn't keep
+
+                      [Verse 3]
+                      Windows shattered whisper slow
+                      Broken dreams that never show
+                      Faces lost in undertow
+                      Memories of what we know
+
+                      [Bridge]
+                      Hands that reach but never find
+                      Hope is just a state of mind
+                      In the night the stars aligned
+                      But they left our souls behind
+
+                      [Chorus]
+                      Screaming in the silence deep
+                      Monsters in my tangled sleep
+                      In the dark where secrets creep
+                      Promises we couldn't keep
+                  - title: Midnight Shadows
+                    lyrics: |-
+                      [Verse]
+                      Midnight shadows creeping up the wall
+                      Voices whisper secrets in the hall
+                      Darkness paints the sky with shades of fear
+                      Haunting echoes say the end is near
+
+                      [Verse 2]
+                      Broken mirrors shards scattered on the floor
+                      Ghostly figures dance through every door
+                      Candlelight flickers casting twisted dreams
+                      Nightmare visions tearing at the seams
+
+                      [Chorus]
+                      We’re lost in the midnight maze alone
+                      Trapped by whispers cold as stone
+                      Shadows wrap tight like a silent curse
+                      In this blackened void it only gets worse
+
+                      [Verse 3]
+                      Falling deeper shadows swallow hope
+                      In their endless grip we can’t cope
+                      Heartbeats racing drums in the dark
+                      No escape just chasing dying sparks
+
+                      [Bridge]
+                      Shattered souls calling from the abyss
+                      Lost in time where nightmares kiss
+                      Darkness binds in its cruel embrace
+                      No more light in this desolate place
+
+                      [Chorus]
+                      We’re lost in the midnight maze alone
+                      Trapped by whispers cold as stone
+                      Shadows wrap tight like a silent curse
+                      In this blackened void it only gets worse
+                message: success
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: lyrics generation
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105517-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+

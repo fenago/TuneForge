@@ -93,6 +93,7 @@ const userSchema = new mongoose.Schema(
       title: String,
       tags: String,
       model: String,
+      personaId: String, // Optional persona ID used
       createdAt: Date
     }],
     

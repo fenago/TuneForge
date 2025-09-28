@@ -1,0 +1,1594 @@
+# Nuro Instruction
+
+# Nuro API Documentation
+
+## Overview
+Nuro is a high-efficiency music generation model jointly developed by MusicAPI and a technology company. It can generate a complete 4-minute song in just 30 seconds. The model offers extensive customization options, allowing multiple parameter adjustments to produce commercially usable music.
+
+## Key Features
+- **Rapid Generation**: Complete a 4-minute song in 30 seconds
+- **Commercial Usage**: No copyright restrictions, ready for commercial use
+- **High Customization**: Support for multiple parameter adjustments
+- **Credit Consumption**: 10 credits per generation
+- **Language support**: Currently supports Chinese and English
+- **Instrumental Music Mode**: Supports generating **pure instrumental tracks** with rich genre and emotional control
+- **Version Support**: v1.0 (Classic) and v2.0 (Enhanced with Structure Control)
+
+## API Versions(for bgm only)
+
+### Version 1.0 (Classic)
+- Traditional parameter-based generation
+- Supports all standard customization options
+- Compatible with existing implementations
+
+### Version 2.0 (Enhanced)
+- **Structure Control**: Define custom music segments (intro, verse, chorus, bridge, outro, inst)
+- **Enhanced Text Processing**: Improved natural language understanding for BGM descriptions
+- **Advanced Customization**: Combines traditional parameters with structural control
+- **Flexible Duration**: Segment-based duration control (30-120 seconds total)
+
+## Customization Parameters
+
+### 1. Music Genre (Vocal Songs)
+Support for 23 music genres:
+- **Pop Music**: Pop, Pop Rock, Pop Punk, Pop Rap
+- **Traditional**: Folk, Chinese Style, GuFeng Music
+- **Electronic**: Electronic, DJ, Future Bass, Chinoiserie Electronic
+- **Hip-Hop**: Hip Hop/Rap, Trap Rap, R&B Rap
+- **Others**: Rock, Jazz, R&B/Soul, Punk, Reggae, Disco, Jazz Pop, Bossa Nova, Contemporary R&B
+
+### 2. Mood (Vocal Songs)
+13 emotional options:
+- **Positive**: Happy, Dynamic/Energetic, Inspirational/Hopeful, Excited
+- **Relaxing**: Chill, Calm/Relaxing, Dreamy/Ethereal
+- **Emotional**: Sentimental/Melancholic/Lonely, Nostalgic/Memory, Sorrow/Sad, Romantic, Miss
+- **Rhythmic**: Groovy/Funky
+
+### 3. Gender
+- Female
+- Male
+
+### 4. Timbre (Vocal Songs)
+9 timbre options:
+- **Basic**: Warm, Bright, Husky
+- **Special**: Electrified voice, Sweet_AUDIO_TIMBRE, Cute_AUDIO_TIMBRE
+- **Power**: Loud and sonorous, Powerful
+- **Style**: Sexy/Lazy
+
+### 5. Duration Control
+- **Vocal Songs**: 30-240 seconds
+- **BGM v1.0**: 1-60 seconds
+- **BGM v2.0**: 30-120 seconds (total of all segments)
+
+## Instrumental Music Mode (Pure Music)
+
+### Version 1.0 BGM Parameters
+Each parameter is a **string array**, and you can **select up to 5 values** for each.  
+The **duration range is 1-60 seconds**.
+
+#### Genres
+```json
+[
+  "corporate", "dance/edm", "orchestral", "chill out", "rock", "hip hop", "folk",
+  "funk", "ambient", "holiday", "jazz", "kids", "world", "travel", "commercial",
+  "advertising", "driving", "cinematic", "upbeat", "epic", "inspiring", "business",
+  "video game", "dark", "pop", "trailer", "modern", "electronic", "documentary",
+  "soundtrack", "fashion", "acoustic", "movie", "tv", "high tech", "industrial",
+  "dance", "video", "vlog", "marketing", "game", "radio", "promotional", "sports",
+  "party", "summer", "beauty"
+]
+```
+
+#### Moods
+```json
+[
+  "positive", "uplifting", "energetic", "happy", "bright", "optimistic", "hopeful", "cool",
+  "dreamy", "fun", "light", "powerful", "calm", "confident", "joyful", "dramatic", "peaceful",
+  "playful", "soft", "groovy", "reflective", "easy", "relaxed", "lively", "smooth", "romantic",
+  "intense", "elegant", "mellow", "emotional", "sentimental", "cheerful happy", "contemplative",
+  "soothing", "proud", "passionate", "sweet", "mystical", "tranquil", "cheerful", "casual",
+  "beautiful", "ethereal", "melancholy", "sad", "aggressive", "haunting", "adventure", "serene",
+  "sincere", "funky", "funny"
+]
+```
+
+#### Instruments
+```json
+[
+  "piano", "drums", "guitar", "percussion", "synth", "electric guitar", "acoustic guitar",
+  "bass guitar", "brass", "violin", "cello", "flute", "organ", "trumpet", "ukulele",
+  "saxophone", "double bass", "harp", "glockenspiel", "synthesizer", "keyboard", "marimba",
+  "bass", "banjo", "strings"
+]
+```
+
+#### Themes
+```json
+[
+  "inspirational", "motivational", "achievement", "discovery", "every day", "love", "technology",
+  "lifestyle", "journey", "meditation", "drama", "children", "hope", "fantasy", "holiday",
+  "health", "family", "real estate", "media", "kids", "science", "education", "progress",
+  "world", "vacation", "training", "christmas", "sales"
+]
+```
+
+### Version 2.0 BGM Enhanced Features
+
+#### Structural Control (NEW)
+Define custom music segments with precise control:
+
+```json
+{
+  "segments": [
+    {
+      "name": "intro",
+      "duration": 10
+    },
+    {
+      "name": "verse", 
+      "duration": 30
+    },
+    {
+      "name": "chorus",
+      "duration": 40
+    },
+    {
+      "name": "outro",
+      "duration": 15
+    }
+  ]
+}
+```
+
+**Available Segment Types:**
+- `intro` - Introduction section
+- `verse` - Verse section  
+- `chorus` - Chorus/refrain section
+- `inst` - Instrumental section
+- `bridge` - Bridge section
+- `outro` - Outro/ending section
+
+**Segment Duration Rules:**
+- Individual segment: 5-120 seconds (30 seconds minimum if only one segment)
+- Total duration: 30-120 seconds
+- Multiple segments allowed for complex structures
+
+#### Enhanced Description Processing
+- **Style Integration**: Automatically incorporates genre, mood, instrument, and theme information
+- **Enhanced Context**: v2.0 enriches descriptions with parameter information
+
+## API Request Examples
+
+### Vocal Song (All Versions)
+```json
+{
+  "type": "vocal",
+  "lyrics": "Your complete song lyrics here (300-2000 characters)",
+  "genre": "Pop",
+  "mood": "Happy", 
+  "gender": "Female",
+  "timbre": "Warm",
+  "duration": 120
+}
+```
+
+### BGM v1.0 (Classic)
+```json
+{
+  "type": "bgm",
+  "version": "v1.0",
+  "description": "Upbeat corporate background music for presentation",
+  "duration": 45,
+  "genre": ["corporate", "upbeat"],
+  "mood": ["positive", "energetic"],
+  "instrument": ["piano", "guitar"],
+  "theme": ["business", "motivational"]
+}
+```
+
+### BGM v2.0 (Enhanced with Segments)
+```json
+{
+  "type": "bgm", 
+  "version": "v2.0",
+  "description": "Cinematic trailer music with dramatic build-up",
+  "segments": [
+    {
+      "name": "intro",
+      "duration": 15
+    },
+    {
+      "name": "verse",
+      "duration": 30  
+    },
+    {
+      "name": "chorus",
+      "duration": 45
+    },
+    {
+      "name": "outro",
+      "duration": 10
+    }
+  ]
+}
+```
+
+### BGM v2.0 (Simple Structure)
+```json
+{
+  "type": "bgm",
+  "version": "v2.0", 
+  "description": "Peaceful meditation music for relaxation app",
+  "duration": 60
+}
+```
+
+## Response Format
+
+### Successful Creation
+```json
+{
+  "message": "success",
+  "task_id": "uuid-task-identifier"
+}
+```
+
+### Task Status Response
+```json
+{
+  "task_id": "uuid-task-identifier",
+  "status": "succeeded", // "pending", "running", "succeeded", "failed"
+  "progress": 100,
+  "audio_url": "https://cdn-url/song.wav",
+  "lyrics": "Generated or provided lyrics",
+  "duration": 120,
+  "genre": "Pop",
+  "mood": "Happy",
+  "gender": "Female",
+  "timbre": "Warm",
+  "prompt": "Enhanced description used for generation",
+  "theme": "Generated theme information",
+  "instrument": "Instrument information"
+}
+```
+
+## Usage Guidelines
+
+### For v1.0 BGM (Classic)
+1. **Parameter Selection**: Choose up to 5 values for each parameter array
+2. **Duration Control**: Set duration between 1-60 seconds
+3. **Style Consistency**: Ensure parameter combinations create coherent style
+
+### For v2.0 BGM (Enhanced)  
+1. **Description Quality**: Provide clear, descriptive text for best results
+2. **Segment Planning**: Design segment structure before submission
+3. **Duration Balance**: Ensure segments create natural musical flow
+4. **Parameter Enhancement**: Use traditional parameters to enhance descriptions
+
+### For Vocal Songs
+1. **Complete Lyrics**: Provide full lyrics (300-2000 characters)
+2. **Parameter Matching**: Ensure coherent combination of genre, mood, and timbre
+3. **Duration Setting**: Select appropriate duration based on lyrics content
+
+## Important Notes
+
+1. **One song per API call** - Each request generates a single complete track
+2. **Quality optimization** - Output quality correlates with parameter settings and description clarity
+3. **Style consistency** - Define clear music style requirements before use
+4. **Legal compliance** - Users are responsible for legal risks in commercial use
+5. **Version selection** - Choose v2.0 for enhanced features, v1.0 for compatibility
+6. **Credit consumption** - 10 credits per generation regardless of version
+7. **Processing time** - Generation typically completes within 30-60 seconds
+
+## Error Handling
+
+Common validation errors and solutions:
+
+- **Invalid duration**: Ensure duration falls within specified ranges for each mode
+- **Missing segments**: v2.0 BGM with segments must include valid segment array
+- **Invalid segment names**: Use only allowed segment types (intro, verse, chorus, inst, bridge, outro)
+- **Segment duration issues**: Individual segments must meet minimum/maximum requirements
+- **Parameter limits**: BGM v1.0 parameters limited to 5 values each
+- **Description length**: BGM descriptions should be under 200 characters
+
+## Migration Guide
+
+### Upgrading from v1.0 to v2.0 BGM
+
+**Minimal Changes Required:**
+```json
+// Add version parameter
+{
+  "version": "v2.0",
+  // ... existing parameters
+}
+```
+**To Use New Features:**
+```json
+{
+  "version": "v2.0",
+  "description": "Your music description",
+  "segments": [
+    // Define your structure,is optional
+  ],
+  // Optional: existing parameters for enhancement
+}
+
+# Error handling
+
+# Nuro API Error Handling Guide
+
+## Error Categories
+
+### 1. System Errors
+| Status | Type | Description |
+|--------|------|-------------|
+| 500 | api_error | API system error, please contact administrator |
+
+### 2. Authentication Errors
+| Status | Type | Description |
+|--------|------|-------------|
+| 401 | unauthorized | Invalid signature |
+| 401 | unauthorized | Authorization expired |
+| 403 | forbidden | API usage limit exceeded |
+| 403 | forbidden | API QPS limit exceeded |
+
+### 3. Content Errors
+| Status | Type | Description |
+|--------|------|-------------|
+| 500 | api_error | Algorithm error |
+| 404 | not_found | Task not found |
+| 400 | bad_request | Input language not supported |
+| 500 | api_error | Semantic error, please try again |
+
+### 4. Resource Errors
+| Status | Type | Description |
+|--------|------|-------------|
+| 403 | forbidden | Queue is full |
+
+## Credit Refund Mechanism
+
+### Error Types Triggering Refund
+- api_error
+- timeout
+- bad_request
+- forbidden
+
+### Refund Process
+1. **Error Detection**
+   - Check response status code
+   - Parse error message
+   - Match error type
+
+2. **Refund Conditions**
+   - Task not marked as processed
+   - Error type qualifies for refund
+   - User credit deduction record exists
+
+3. **Refund Processing**
+   - Update task status
+   - Refund user credits
+   - Log refund transaction
+
+### Error Response Format
+```typescript
+{
+  type: string;       // Error type
+  message: string;    // Error message
+  refund_processed?: boolean;  // Whether refund has been processed
+  already_refunded?: boolean;  // Whether previously refunded
+}
+```
+
+## Best Practices
+1. Always check API response status
+2. Implement error retry mechanism
+3. Maintain detailed error logs
+4. Handle credit refund notifications properly
+5. Provide clear error messages to users
+# create vocal music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/nuro/create:
+    post:
+      summary: create vocal music
+      deprecated: false
+      description: ''
+      tags:
+        - nuro
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lyrics:
+                  type: string
+                  description: song lyrics, max 2000 characters
+                  maxLength: 2000
+                gender:
+                  type: string
+                  description: >-
+                    The singer's gender. If not provided, the service will
+                    automatically predict it.
+                  enum:
+                    - Female
+                    - Male
+                  x-apidog:
+                    enumDescriptions:
+                      Female: ''
+                      Male: ''
+                genre:
+                  type: string
+                  description: >-
+                    The genre of the song. If you don't specify it, the service
+                    will automatically predict it.
+                  enum:
+                    - Folk
+                    - Pop
+                    - Rock
+                    - Chinese Style
+                    - Hip Hop/Rap
+                    - R&B/Soul
+                    - Punk
+                    - Electronic
+                    - Jazz
+                    - Reggae
+                    - DJ
+                    - Pop Punk
+                    - Disco
+                    - Future Bass
+                    - Pop Rap
+                    - Trap Rap
+                    - R&B Rap
+                    - Chinoiserie Electronic
+                    - GuFeng Music
+                    - Pop Rock
+                    - Jazz Pop
+                    - Bossa Nova
+                    - Contemporary R&B
+                  x-apidog:
+                    enumDescriptions:
+                      Folk: ''
+                      Pop: ''
+                      Rock: ''
+                      Chinese Style: ''
+                      Hip Hop/Rap: ''
+                      R&B/Soul: ''
+                      Punk: ''
+                      Electronic: ''
+                      Jazz: ''
+                      Reggae: ''
+                      DJ: ''
+                      Pop Punk: ''
+                      Disco: ''
+                      Future Bass: ''
+                      Pop Rap: ''
+                      Trap Rap: ''
+                      R&B Rap: ''
+                      Chinoiserie Electronic: ''
+                      GuFeng Music: ''
+                      Pop Rock: ''
+                      Jazz Pop: ''
+                      Bossa Nova: ''
+                      Contemporary R&B: ''
+                mood:
+                  type: string
+                  description: >-
+                    The mood of the song, if not provided, the service will
+                    automatically predict it
+                  enum:
+                    - Happy
+                    - Dynamic/Energetic
+                    - Sentimental/Melancholic/Lonely
+                    - Inspirational/Hopeful
+                    - Nostalgic/Memory
+                    - Excited
+                    - Sorrow/Sad
+                    - Chill
+                    - Romantic
+                    - Miss
+                    - Groovy/Funky
+                    - Dreamy/Ethereal
+                    - Calm/Relaxing
+                  x-apidog:
+                    enumDescriptions:
+                      Happy: ''
+                      Dynamic/Energetic: ''
+                      Sentimental/Melancholic/Lonely: ''
+                      Inspirational/Hopeful: ''
+                      Nostalgic/Memory: ''
+                      Excited: ''
+                      Sorrow/Sad: ''
+                      Chill: ''
+                      Romantic: ''
+                      Miss: ''
+                      Groovy/Funky: ''
+                      Dreamy/Ethereal: ''
+                      Calm/Relaxing: ''
+                timbre:
+                  type: string
+                  description: >-
+                    The timbre of the song. If not provided, the service will
+                    automatically predict it.
+                  enum:
+                    - Warm
+                    - Bright
+                    - Husky
+                    - Electrified voice
+                    - Sweet_AUDIO_TIMBRE
+                    - Cute_AUDIO_TIMBRE
+                    - Loud and sonorous
+                    - Powerful
+                    - Sexy/Lazy
+                  x-apidog:
+                    enumDescriptions:
+                      Warm: ''
+                      Bright: ''
+                      Husky: ''
+                      Electrified voice: ''
+                      Sweet_AUDIO_TIMBRE: ''
+                      Cute_AUDIO_TIMBRE: ''
+                      Loud and sonorous: ''
+                      Powerful: ''
+                      Sexy/Lazy: ''
+                duration:
+                  type: integer
+                  description: >-
+                    Duration of the song , The duration of the song, the default
+                    is 2 minutes, [30,240]
+                  minimum: 30
+                  maximum: 240
+                  default: 120
+                type:
+                  type: string
+                  description: music type
+                  enum:
+                    - vocal
+                    - bgm
+                  x-apidog:
+                    enumDescriptions:
+                      vocal: vocal music
+                      bgm: instrument music
+              required:
+                - lyrics
+                - type
+              x-apidog-orders:
+                - type
+                - lyrics
+                - gender
+                - genre
+                - mood
+                - timbre
+                - duration
+            example:
+              type: vocal
+              lyrics: >-
+                [intro]  We were both young when I first saw you  I close my
+                eyes and the flashback starts  I'm standin' there  On a balcony
+                in summer air  [verse]  See the lights, see the party, the ball
+                gowns  See you make your way through the crowd  And say,
+                'Hello'  Little did I know  [pre-chorus]  That you were Romeo,
+                you were throwin' pebbles  And my daddy said, 'Stay away from
+                Juliet'  And I was cryin' on the staircase  Escape this town for
+                a little while, oh oh  [chorus]  And said, 'Marry me, Juliet 
+                You'll never have to be alone  I love you and that's all I
+                really know  I talked to your dad, go pick out a white dress 
+                It's a love story, baby, just say, 'Yes''  [inst]  (Instrumental
+                break)  [bridge]  I got tired of waiting  Wondering if you were
+                ever coming around  My faith in you was fading  When I met you
+                on the outskirts of town  [chorus]  And I said, 'Romeo, save me 
+                I've been feeling so alone  I keep waiting for you, but you
+                never come  Is this in my head? I don't know what to think' 
+                [outro]  I talked to your dad, go pick out a white dress  It's a
+                love story, baby, just say, 'Yes'  Oh, oh, oh  'Cause we were
+                both young when I first saw you 
+              gender: Female
+              genre: Pop
+              mood: Dynamic/Energetic
+              timbre: Sweet_AUDIO_TIMBRE
+              duration: 200
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 4c35433b-1649-433d-b513-8422af70fbaa
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: nuro
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105518-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# create instrument music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/nuro/create:
+    post:
+      summary: create instrument music
+      deprecated: false
+      description: ''
+      tags:
+        - nuro
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - vocal
+                    - bgm
+                  description: music type
+                  x-apidog-enum:
+                    - name: ''
+                      value: vocal
+                      description: vocal music
+                    - name: ''
+                      value: bgm
+                      description: instrument music
+                description:
+                  type: string
+                  description: music description
+                genre:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - corporate
+                      - dance/edm
+                      - orchestral
+                      - chill out
+                      - rock
+                      - hip hop
+                      - folk
+                      - funk
+                      - ambient
+                      - holiday
+                      - jazz
+                      - kids
+                      - world
+                      - travel
+                      - commercial
+                      - advertising
+                      - driving
+                      - cinematic
+                      - upbeat
+                      - epic
+                      - inspiring
+                      - business
+                      - video game
+                      - dark
+                      - pop
+                      - trailer
+                      - modern
+                      - electronic
+                      - documentary
+                      - soundtrack
+                      - fashion
+                      - acoustic
+                      - movie
+                      - tv
+                      - high tech
+                      - industrial
+                      - dance
+                      - video
+                      - vlog
+                      - marketing
+                      - game
+                      - radio
+                      - promotional
+                      - sports
+                      - party
+                      - summer
+                      - beauty
+                    x-apidog-enum:
+                      - name: ''
+                        value: corporate
+                        description: ''
+                      - name: ''
+                        value: dance/edm
+                        description: ''
+                      - name: ''
+                        value: orchestral
+                        description: ''
+                      - name: ''
+                        value: chill out
+                        description: ''
+                      - name: ''
+                        value: rock
+                        description: ''
+                      - name: ''
+                        value: hip hop
+                        description: ''
+                      - name: ''
+                        value: folk
+                        description: ''
+                      - name: ''
+                        value: funk
+                        description: ''
+                      - name: ''
+                        value: ambient
+                        description: ''
+                      - name: ''
+                        value: holiday
+                        description: ''
+                      - name: ''
+                        value: jazz
+                        description: ''
+                      - name: ''
+                        value: kids
+                        description: ''
+                      - name: ''
+                        value: world
+                        description: ''
+                      - name: ''
+                        value: travel
+                        description: ''
+                      - name: ''
+                        value: commercial
+                        description: ''
+                      - name: ''
+                        value: advertising
+                        description: ''
+                      - name: ''
+                        value: driving
+                        description: ''
+                      - name: ''
+                        value: cinematic
+                        description: ''
+                      - name: ''
+                        value: upbeat
+                        description: ''
+                      - name: ''
+                        value: epic
+                        description: ''
+                      - name: ''
+                        value: inspiring
+                        description: ''
+                      - name: ''
+                        value: business
+                        description: ''
+                      - name: ''
+                        value: video game
+                        description: ''
+                      - name: ''
+                        value: dark
+                        description: ''
+                      - name: ''
+                        value: pop
+                        description: ''
+                      - name: ''
+                        value: trailer
+                        description: ''
+                      - name: ''
+                        value: modern
+                        description: ''
+                      - name: ''
+                        value: electronic
+                        description: ''
+                      - name: ''
+                        value: documentary
+                        description: ''
+                      - name: ''
+                        value: soundtrack
+                        description: ''
+                      - name: ''
+                        value: fashion
+                        description: ''
+                      - name: ''
+                        value: acoustic
+                        description: ''
+                      - name: ''
+                        value: movie
+                        description: ''
+                      - name: ''
+                        value: tv
+                        description: ''
+                      - name: ''
+                        value: high tech
+                        description: ''
+                      - name: ''
+                        value: industrial
+                        description: ''
+                      - name: ''
+                        value: dance
+                        description: ''
+                      - name: ''
+                        value: video
+                        description: ''
+                      - name: ''
+                        value: vlog
+                        description: ''
+                      - name: ''
+                        value: marketing
+                        description: ''
+                      - name: ''
+                        value: game
+                        description: ''
+                      - name: ''
+                        value: radio
+                        description: ''
+                      - name: ''
+                        value: promotional
+                        description: ''
+                      - name: ''
+                        value: sports
+                        description: ''
+                      - name: ''
+                        value: party
+                        description: ''
+                      - name: ''
+                        value: summer
+                        description: ''
+                      - name: ''
+                        value: beauty
+                        description: ''
+                  description: >-
+                    music genre, multiple selections are allowed, it is a string
+                    array, max 5
+                  uniqueItems: true
+                  maxItems: 5
+                mood:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - positive
+                      - uplifting
+                      - energetic
+                      - happy
+                      - bright
+                      - optimistic
+                      - hopeful
+                      - cool
+                      - dreamy
+                      - fun
+                      - light
+                      - powerful
+                      - calm
+                      - confident
+                      - joyful
+                      - dramatic
+                      - peaceful
+                      - playful
+                      - soft
+                      - groovy
+                      - reflective
+                      - easy
+                      - relaxed
+                      - lively
+                      - smooth
+                      - romantic
+                      - intense
+                      - elegant
+                      - mellow
+                      - emotional
+                      - sentimental
+                      - cheerful happy
+                      - contemplative
+                      - soothing
+                      - proud
+                      - passionate
+                      - sweet
+                      - mystical
+                      - tranquil
+                      - cheerful
+                      - casual
+                      - beautiful
+                      - ethereal
+                      - melancholy
+                      - sad
+                      - aggressive
+                      - haunting
+                      - adventure
+                      - serene
+                      - sincere
+                      - funky
+                      - funny
+                    x-apidog-enum:
+                      - name: ''
+                        value: positive
+                        description: ''
+                      - name: ''
+                        value: uplifting
+                        description: ''
+                      - name: ''
+                        value: energetic
+                        description: ''
+                      - name: ''
+                        value: happy
+                        description: ''
+                      - name: ''
+                        value: bright
+                        description: ''
+                      - name: ''
+                        value: optimistic
+                        description: ''
+                      - name: ''
+                        value: hopeful
+                        description: ''
+                      - name: ''
+                        value: cool
+                        description: ''
+                      - name: ''
+                        value: dreamy
+                        description: ''
+                      - name: ''
+                        value: fun
+                        description: ''
+                      - name: ''
+                        value: light
+                        description: ''
+                      - name: ''
+                        value: powerful
+                        description: ''
+                      - name: ''
+                        value: calm
+                        description: ''
+                      - name: ''
+                        value: confident
+                        description: ''
+                      - name: ''
+                        value: joyful
+                        description: ''
+                      - name: ''
+                        value: dramatic
+                        description: ''
+                      - name: ''
+                        value: peaceful
+                        description: ''
+                      - name: ''
+                        value: playful
+                        description: ''
+                      - name: ''
+                        value: soft
+                        description: ''
+                      - name: ''
+                        value: groovy
+                        description: ''
+                      - name: ''
+                        value: reflective
+                        description: ''
+                      - name: ''
+                        value: easy
+                        description: ''
+                      - name: ''
+                        value: relaxed
+                        description: ''
+                      - name: ''
+                        value: lively
+                        description: ''
+                      - name: ''
+                        value: smooth
+                        description: ''
+                      - name: ''
+                        value: romantic
+                        description: ''
+                      - name: ''
+                        value: intense
+                        description: ''
+                      - name: ''
+                        value: elegant
+                        description: ''
+                      - name: ''
+                        value: mellow
+                        description: ''
+                      - name: ''
+                        value: emotional
+                        description: ''
+                      - name: ''
+                        value: sentimental
+                        description: ''
+                      - name: ''
+                        value: cheerful happy
+                        description: ''
+                      - name: ''
+                        value: contemplative
+                        description: ''
+                      - name: ''
+                        value: soothing
+                        description: ''
+                      - name: ''
+                        value: proud
+                        description: ''
+                      - name: ''
+                        value: passionate
+                        description: ''
+                      - name: ''
+                        value: sweet
+                        description: ''
+                      - name: ''
+                        value: mystical
+                        description: ''
+                      - name: ''
+                        value: tranquil
+                        description: ''
+                      - name: ''
+                        value: cheerful
+                        description: ''
+                      - name: ''
+                        value: casual
+                        description: ''
+                      - name: ''
+                        value: beautiful
+                        description: ''
+                      - name: ''
+                        value: ethereal
+                        description: ''
+                      - name: ''
+                        value: melancholy
+                        description: ''
+                      - name: ''
+                        value: sad
+                        description: ''
+                      - name: ''
+                        value: aggressive
+                        description: ''
+                      - name: ''
+                        value: haunting
+                        description: ''
+                      - name: ''
+                        value: adventure
+                        description: ''
+                      - name: ''
+                        value: serene
+                        description: ''
+                      - name: ''
+                        value: sincere
+                        description: ''
+                      - name: ''
+                        value: funky
+                        description: ''
+                      - name: ''
+                        value: funny
+                        description: ''
+                  description: >-
+                    music mood, multiple selections are allowed, it is a string
+                    array, max 5
+                  uniqueItems: true
+                  maxItems: 5
+                instrument:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - piano
+                      - drums
+                      - guitar
+                      - percussion
+                      - synth
+                      - electric guitar
+                      - acoustic guitar
+                      - bass guitar
+                      - brass
+                      - violin
+                      - cello
+                      - flute
+                      - organ
+                      - trumpet
+                      - ukulele
+                      - saxophone
+                      - double bass
+                      - harp
+                      - glockenspiel
+                      - synthesizer
+                      - keyboard
+                      - marimba
+                      - bass
+                      - banjo
+                      - strings
+                    x-apidog-enum:
+                      - name: ''
+                        value: piano
+                        description: ''
+                      - name: ''
+                        value: drums
+                        description: ''
+                      - name: ''
+                        value: guitar
+                        description: ''
+                      - name: ''
+                        value: percussion
+                        description: ''
+                      - name: ''
+                        value: synth
+                        description: ''
+                      - name: ''
+                        value: electric guitar
+                        description: ''
+                      - name: ''
+                        value: acoustic guitar
+                        description: ''
+                      - name: ''
+                        value: bass guitar
+                        description: ''
+                      - name: ''
+                        value: brass
+                        description: ''
+                      - name: ''
+                        value: violin
+                        description: ''
+                      - name: ''
+                        value: cello
+                        description: ''
+                      - name: ''
+                        value: flute
+                        description: ''
+                      - name: ''
+                        value: organ
+                        description: ''
+                      - name: ''
+                        value: trumpet
+                        description: ''
+                      - name: ''
+                        value: ukulele
+                        description: ''
+                      - name: ''
+                        value: saxophone
+                        description: ''
+                      - name: ''
+                        value: double bass
+                        description: ''
+                      - name: ''
+                        value: harp
+                        description: ''
+                      - name: ''
+                        value: glockenspiel
+                        description: ''
+                      - name: ''
+                        value: synthesizer
+                        description: ''
+                      - name: ''
+                        value: keyboard
+                        description: ''
+                      - name: ''
+                        value: marimba
+                        description: ''
+                      - name: ''
+                        value: bass
+                        description: ''
+                      - name: ''
+                        value: banjo
+                        description: ''
+                      - name: ''
+                        value: strings
+                        description: ''
+                  description: >-
+                    music instrument, multiple selections are allowed, it is a
+                    string array, max 5
+                  uniqueItems: true
+                  maxItems: 5
+                theme:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - inspirational
+                      - motivational
+                      - achievement
+                      - discovery
+                      - every day
+                      - love
+                      - technology
+                      - lifestyle
+                      - journey
+                      - meditation
+                      - drama
+                      - children
+                      - hope
+                      - fantasy
+                      - holiday
+                      - health
+                      - family
+                      - real estate
+                      - media
+                      - kids
+                      - science
+                      - education
+                      - progress
+                      - world
+                      - vacation
+                      - training
+                      - christmas
+                      - sales
+                    x-apidog-enum:
+                      - name: ''
+                        value: inspirational
+                        description: ''
+                      - name: ''
+                        value: motivational
+                        description: ''
+                      - name: ''
+                        value: achievement
+                        description: ''
+                      - name: ''
+                        value: discovery
+                        description: ''
+                      - name: ''
+                        value: every day
+                        description: ''
+                      - name: ''
+                        value: love
+                        description: ''
+                      - name: ''
+                        value: technology
+                        description: ''
+                      - name: ''
+                        value: lifestyle
+                        description: ''
+                      - name: ''
+                        value: journey
+                        description: ''
+                      - name: ''
+                        value: meditation
+                        description: ''
+                      - name: ''
+                        value: drama
+                        description: ''
+                      - name: ''
+                        value: children
+                        description: ''
+                      - name: ''
+                        value: hope
+                        description: ''
+                      - name: ''
+                        value: fantasy
+                        description: ''
+                      - name: ''
+                        value: holiday
+                        description: ''
+                      - name: ''
+                        value: health
+                        description: ''
+                      - name: ''
+                        value: family
+                        description: ''
+                      - name: ''
+                        value: real estate
+                        description: ''
+                      - name: ''
+                        value: media
+                        description: ''
+                      - name: ''
+                        value: kids
+                        description: ''
+                      - name: ''
+                        value: science
+                        description: ''
+                      - name: ''
+                        value: education
+                        description: ''
+                      - name: ''
+                        value: progress
+                        description: ''
+                      - name: ''
+                        value: world
+                        description: ''
+                      - name: ''
+                        value: vacation
+                        description: ''
+                      - name: ''
+                        value: training
+                        description: ''
+                      - name: ''
+                        value: christmas
+                        description: ''
+                      - name: ''
+                        value: sales
+                        description: ''
+                  uniqueItems: true
+                  maxItems: 5
+                  description: >-
+                    music theme, multiple selections are allowed, it is a string
+                    array, max 5
+                duration:
+                  type: integer
+                  minimum: 1
+                  maximum: 60
+                  default: 60
+                version:
+                  type: string
+                  enum:
+                    - v1.0
+                    - v2.0
+                  x-apidog-enum:
+                    - value: v1.0
+                      name: ''
+                      description: ''
+                    - value: v2.0
+                      name: ''
+                      description: ''
+                  description: model version
+                segments:
+                  type: object
+                  properties: {}
+                  x-apidog-orders: []
+                  description: Define custom music segments
+              required:
+                - type
+                - description
+              x-apidog-orders:
+                - type
+                - description
+                - genre
+                - mood
+                - instrument
+                - theme
+                - duration
+                - version
+                - segments
+            example: "//v1.0\r\n// {\r\n//   \"type\": \"bgm\",\r\n//   \"description\": \"Intense and tense game battle background music with epic momentum\",\r\n//   \"genre\": [\"video game\", \"electronic\", \"epic\", \"cinematic\"],\r\n//   \"mood\": [\"powerful\", \"energetic\", \"intense\", \"aggressive\"],\r\n//   \"instrument\": [\"drums\", \"synth\", \"brass\", \"strings\"],\r\n//   \"theme\": [\"achievement\", \"fantasy\", \"drama\"],\r\n//   \"duration\": 35\r\n// }\r\n//v2.0\r\n{\r\n  \"description\": \"cinematic background score\",\r\n  \"type\": \"bgm\",\r\n  \"version\": \"v2.0\",\r\n  \"duration\": 90,\r\n  \"segments\": [\r\n    {\"name\": \"intro\", \"duration\": 20},\r\n    {\"name\": \"verse\", \"duration\": 25},\r\n    {\"name\": \"chorus\", \"duration\": 30},\r\n    {\"name\": \"outro\", \"duration\": 15}\r\n  ]\r\n}"
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: b1eac403-06cb-4e58-971d-835d3b321508
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: nuro
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105519-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# get music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/nuro/task/{task_id}:
+    get:
+      summary: get music
+      deprecated: false
+      description: ''
+      tags:
+        - nuro
+      parameters:
+        - name: task_id
+          in: path
+          description: task id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                    description: task id
+                  status:
+                    type: string
+                    enum:
+                      - pending
+                      - running
+                      - succeeded
+                    x-apidog:
+                      enumDescriptions:
+                        pending: ''
+                        running: ''
+                        succeeded: ''
+                    description: >-
+                      task status, When "succeeded", it means the song is
+                      generated.
+                  progress:
+                    type: integer
+                    maximum: 100
+                    description: >-
+                      The song generation progress, when it is 100, it means the
+                      song was generated successfully
+                  audio_url:
+                    type: string
+                    description: Online audio URL in wav format
+                  lyrics:
+                    type: string
+                    description: song lyrics
+                  duration:
+                    type: number
+                    description: song duration
+                  genre:
+                    type: string
+                    description: genre of the song
+                  mood:
+                    type: string
+                    description: mood of the song
+                  gender:
+                    type: string
+                    description: gender of the song
+                  timbre:
+                    type: string
+                    description: timbre of the song
+                required:
+                  - task_id
+                  - status
+                  - progress
+                  - audio_url
+                  - lyrics
+                  - duration
+                  - genre
+                  - mood
+                  - gender
+                  - timbre
+                x-apidog-orders:
+                  - task_id
+                  - status
+                  - progress
+                  - audio_url
+                  - lyrics
+                  - duration
+                  - genre
+                  - mood
+                  - gender
+                  - timbre
+              example:
+                task_id: 4c35433b-1649-433d-b513-8422af70fbaa
+                status: succeeded
+                progress: 100
+                audio_url: >-
+                  https://cdn.musicapi.ai/storage/v1/object/public/songs/song-4c35433b-1649-433d-b513-8422af70fbaa.wav
+                lyrics: >-
+                  [intro]
+
+                  [verse]
+
+                  We were both young when I first saw you I close my eyes and
+                  the flashback starts I'm standin' there On a balcony in summer
+                  air
+
+                  See the lights see the party the ball gowns See you make your
+                  way through the crowd And say 'Hello' Little did I know
+
+                  [bridge]
+
+                  That you were Romeo you were throwin' pebbles And my daddy
+                  said 'Stay away from Juliet' And I was cryin' on the staircase
+                  Escape this town for a little while oh oh
+
+                  [chorus]
+
+                  And said 'Marry me Juliet You'll never have to be alone I love
+                  you and that's all I really know I talked to your dad go pick
+                  out a white dress It's a love story baby just say 'Yes''
+
+                  [inst]
+
+                  [verse]
+
+                  Instrumental break
+
+                  [bridge]
+
+                  I got tired of waiting Wondering if you were ever coming
+                  around My faith in you was fading When I met you on the
+                  outskirts of town
+
+                  [chorus]
+
+                  And I said 'Romeo save me I've been feeling so alone I keep
+                  waiting for you but you never come Is this in my head I don't
+                  know what to think'
+
+                  [inst]
+
+                  [verse]
+
+                  I talked to your dad go pick out a white dress It's a love
+                  story baby just say 'Yes' Oh oh oh 'Cause we were both young
+                  when I first saw you
+
+                  [outro]
+                duration: 199.04325
+                genre: Pop
+                mood: Dynamic/Energetic
+                gender: Female
+                timbre: Sweet_AUDIO_TIMBRE
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: nuro
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105520-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+
+
+
+
+

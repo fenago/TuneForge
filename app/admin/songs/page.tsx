@@ -45,83 +45,68 @@ export default function AdminSongsPage() {
   const [sortBy, setSortBy] = useState<keyof Song>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const [stats, setStats] = useState({
+    totalSongs: 0,
+    activeSongs: 0,
+    flaggedSongs: 0,
+    totalPlays: 0
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
 
   const songsPerPage = 10;
 
-  // Mock data - in real implementation, fetch from API
+  // Fetch real songs from API
   useEffect(() => {
-    setTimeout(() => {
-      setSongs([
-        {
-          id: "1",
-          title: "Summer Dreams",
-          user: { id: "1", name: "John Doe", email: "john@example.com" },
-          tags: "pop, upbeat, summer",
-          createdAt: "2024-01-20T10:30:00Z",
-          duration: 180,
-          model: "chirp-v4",
-          audioUrl: "https://example.com/song1.mp3",
-          imageUrl: "https://example.com/cover1.jpg",
-          status: "active",
-          plays: 45,
-          downloads: 12
-        },
-        {
-          id: "2",
-          title: "Midnight Jazz",
-          user: { id: "2", name: "Sarah Wilson", email: "sarah@example.com" },
-          tags: "jazz, smooth, instrumental",
-          createdAt: "2024-01-19T15:45:00Z",
-          duration: 240,
-          model: "chirp-v3-5",
-          audioUrl: "https://example.com/song2.mp3",
-          status: "active",
-          plays: 23,
-          downloads: 8
-        },
-        {
-          id: "3",
-          title: "Electronic Pulse",
-          user: { id: "3", name: "Mike Johnson", email: "mike@example.com" },
-          tags: "electronic, dance, energetic",
-          createdAt: "2024-01-18T09:20:00Z",
-          duration: 195,
-          model: "chirp-v4-5",
-          audioUrl: "https://example.com/song3.mp3",
-          status: "flagged",
-          plays: 67,
-          downloads: 15
-        },
-        {
-          id: "4",
-          title: "Acoustic Sunset",
-          user: { id: "4", name: "Emma Davis", email: "emma@example.com" },
-          tags: "acoustic, folk, peaceful",
-          createdAt: "2024-01-17T14:10:00Z",
-          duration: 210,
-          model: "chirp-v4",
-          audioUrl: "https://example.com/song4.mp3",
-          status: "active",
-          plays: 89,
-          downloads: 34
-        },
-        {
-          id: "5",
-          title: "Rock Anthem",
-          user: { id: "5", name: "Alex Brown", email: "alex@example.com" },
-          tags: "rock, powerful, guitar",
-          createdAt: "2024-01-16T11:30:00Z",
-          duration: 225,
-          model: "chirp-v4-5-plus",
-          audioUrl: "https://example.com/song5.mp3",
-          status: "removed",
-          plays: 156,
-          downloads: 42
-        }
-      ]);
+    fetchSongs();
+  }, [currentPage, searchTerm, statusFilter, genreFilter, sortBy, sortOrder]);
+
+  const fetchSongs = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: songsPerPage.toString(),
+        sortBy,
+        sortOrder
+      });
+
+      if (searchTerm) params.append('search', searchTerm);
+      if (statusFilter !== 'all') params.append('status', statusFilter);
+      if (genreFilter !== 'all') params.append('genre', genreFilter);
+
+      console.log('🎵 ADMIN: Fetching songs from API...');
+      const response = await fetch(`/api/admin/songs?${params.toString()}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ ADMIN: Received songs:', data.songs?.length || 0);
+        setSongs(data.songs || []);
+        setStats(data.stats || { totalSongs: 0, activeSongs: 0, flaggedSongs: 0, totalPlays: 0 });
+        setTotalPages(data.pagination?.totalPages || 1);
+      } else if (response.status === 403) {
+        console.log('❌ ADMIN: Access denied');
+        setError('You do not have permission to access song management.');
+        setSongs([]);
+      } else {
+        console.error('❌ ADMIN: Failed to fetch songs:', response.status);
+        setError('Failed to load songs. Please try again.');
+        setSongs([]);
+      }
+    } catch (error) {
+      console.error('❌ ADMIN: Error fetching songs:', error);
+      setError('An error occurred while loading songs.');
+      setSongs([]);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
 
   if (session?.user?.role !== "ADMIN") {
     return (
@@ -134,35 +119,8 @@ export default function AdminSongsPage() {
     );
   }
 
-  const filteredSongs = songs.filter(song => {
-    const matchesSearch = song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         song.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         song.tags.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || song.status === statusFilter;
-    const matchesGenre = genreFilter === "all" || song.tags.toLowerCase().includes(genreFilter);
-    return matchesSearch && matchesStatus && matchesGenre;
-  });
-
-  const sortedSongs = [...filteredSongs].sort((a, b) => {
-    const aValue = a[sortBy];
-    const bValue = b[sortBy];
-    
-    if (typeof aValue === "string" && typeof bValue === "string") {
-      return sortOrder === "asc" 
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
-    }
-    
-    if (typeof aValue === "number" && typeof bValue === "number") {
-      return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
-    }
-    
-    return 0;
-  });
-
-  const totalPages = Math.ceil(sortedSongs.length / songsPerPage);
-  const startIndex = (currentPage - 1) * songsPerPage;
-  const paginatedSongs = sortedSongs.slice(startIndex, startIndex + songsPerPage);
+  // Server-side filtering and pagination - songs are already filtered and paginated
+  const paginatedSongs = songs;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -206,35 +164,64 @@ export default function AdminSongsPage() {
     }
   };
 
-  const handleSongAction = (songId: string, action: string) => {
+  const handleSongAction = async (songId: string, action: string) => {
+    const song = songs.find(s => s.id === songId);
+    if (!song) return;
+
+    // Get confirmation for destructive actions
+    let confirmMessage = '';
     switch (action) {
-      case "flag":
-        setSongs(prev => prev.map(song => 
-          song.id === songId ? { ...song, status: "flagged" as const } : song
-        ));
+      case 'flag':
+        confirmMessage = `Are you sure you want to flag "${song.title}"? This will mark it for review.`;
         break;
-      case "unflag":
-        setSongs(prev => prev.map(song => 
-          song.id === songId ? { ...song, status: "active" as const } : song
-        ));
+      case 'remove':
+        confirmMessage = `Are you sure you want to remove "${song.title}"? This will hide it from users but keep it in the database.`;
         break;
-      case "remove":
-        if (confirm("Are you sure you want to remove this song?")) {
-          setSongs(prev => prev.map(song => 
-            song.id === songId ? { ...song, status: "removed" as const } : song
+      case 'delete':
+        confirmMessage = `⚠️ WARNING: Are you sure you want to permanently delete "${song.title}"? This action cannot be undone and will completely remove the song from the database.`;
+        break;
+    }
+
+    if (confirmMessage && !confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      if (action === 'delete') {
+        const response = await fetch(`/api/admin/songs/${songId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          // Remove from local state and refresh stats
+          setSongs(prev => prev.filter(s => s.id !== songId));
+          fetchSongs(); // Refresh to get updated stats
+        } else {
+          throw new Error('Failed to delete song');
+        }
+      } else {
+        // Flag, unflag, remove, restore actions
+        const response = await fetch(`/api/admin/songs/${songId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Update local state
+          setSongs(prev => prev.map(s => 
+            s.id === songId ? { ...s, status: data.song.status } : s
           ));
+          // Refresh to get updated stats
+          fetchSongs();
+        } else {
+          throw new Error(`Failed to ${action} song`);
         }
-        break;
-      case "restore":
-        setSongs(prev => prev.map(song => 
-          song.id === songId ? { ...song, status: "active" as const } : song
-        ));
-        break;
-      case "delete":
-        if (confirm("Are you sure you want to permanently delete this song? This action cannot be undone.")) {
-          setSongs(prev => prev.filter(song => song.id !== songId));
-        }
-        break;
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing song:`, error);
+      alert(`Failed to ${action} song. Please try again.`);
     }
   };
 
@@ -244,34 +231,37 @@ export default function AdminSongsPage() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Song Management</h1>
-          <p className="text-gray-600 mt-2">Monitor and manage all generated songs</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Song Management</h1>
+            <p className="text-gray-600 mt-2">Monitor and manage all generated songs</p>
+          </div>
+          <button 
+            onClick={fetchSongs}
+            disabled={loading}
+            className="bg-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            🔄 Refresh
+          </button>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
             <h3 className="text-sm font-medium text-gray-600">Total Songs</h3>
-            <p className="text-2xl font-bold text-gray-900">{songs.length}</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalSongs}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
             <h3 className="text-sm font-medium text-gray-600">Active Songs</h3>
-            <p className="text-2xl font-bold text-green-600">
-              {songs.filter(s => s.status === "active").length}
-            </p>
+            <p className="text-2xl font-bold text-green-600">{stats.activeSongs}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
             <h3 className="text-sm font-medium text-gray-600">Flagged Songs</h3>
-            <p className="text-2xl font-bold text-yellow-600">
-              {songs.filter(s => s.status === "flagged").length}
-            </p>
+            <p className="text-2xl font-bold text-yellow-600">{stats.flaggedSongs}</p>
           </div>
           <div className="bg-white rounded-lg shadow p-4 border border-gray-100">
             <h3 className="text-sm font-medium text-gray-600">Total Plays</h3>
-            <p className="text-2xl font-bold text-blue-600">
-              {songs.reduce((acc, s) => acc + s.plays, 0)}
-            </p>
+            <p className="text-2xl font-bold text-blue-600">{stats.totalPlays}</p>
           </div>
         </div>
 
@@ -323,6 +313,29 @@ export default function AdminSongsPage() {
             <div className="p-8 text-center">
               <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
               <p className="text-gray-600">Loading songs...</p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <div className="text-red-600 mb-4">⚠️</div>
+              <h3 className="text-lg font-medium text-red-900 mb-2">Error Loading Songs</h3>
+              <p className="text-red-700 mb-4">{error}</p>
+              <button
+                onClick={fetchSongs}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : paginatedSongs.length === 0 ? (
+            <div className="p-8 text-center">
+              <div className="text-gray-400 mb-4">🎵</div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Songs Found</h3>
+              <p className="text-gray-600">
+                {searchTerm || statusFilter !== "all" || genreFilter !== "all"
+                  ? "Try adjusting your search or filter criteria"
+                  : "No songs have been generated yet"
+                }
+              </p>
             </div>
           ) : (
             <>
@@ -538,11 +551,11 @@ export default function AdminSongsPage() {
                   <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                     <div>
                       <p className="text-sm text-gray-700">
-                        Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
+                        Showing <span className="font-medium">{((currentPage - 1) * songsPerPage) + 1}</span> to{' '}
                         <span className="font-medium">
-                          {Math.min(startIndex + songsPerPage, sortedSongs.length)}
+                          {Math.min(currentPage * songsPerPage, stats.totalSongs)}
                         </span>{' '}
-                        of <span className="font-medium">{sortedSongs.length}</span> results
+                        of <span className="font-medium">{stats.totalSongs}</span> results
                       </p>
                     </div>
                     <div>

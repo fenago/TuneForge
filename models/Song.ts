@@ -1,13 +1,34 @@
 import mongoose from "mongoose";
 import toJSON from "./plugins/toJSON";
+import { UnifiedSongMetadata, APIProvider, SongStatus } from '@/types/unified-song';
 
-// SONG SCHEMA
+// UNIFIED SONG SCHEMA - Supports both SunoAPI.com and SunoAPI.org
 const songSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+    },
+    
+    // API TRACKING - CRITICAL for dual-provider support
+    apiProvider: {
+      type: String,
+      enum: ['sunoapi_com', 'sunoapi_org'],
+      required: true,
+      default: 'sunoapi_com'
+    },
+    apiTaskId: {
+      type: String,
+      required: true,
+      index: true
+    },
+    apiClipId: {
+      type: String,
+      index: true
+    },
+    apiResponseRaw: {
+      type: mongoose.Schema.Types.Mixed, // Store original API response
     },
     title: {
       type: String,
@@ -109,8 +130,8 @@ const songSchema = new mongoose.Schema(
     // Metadata
     status: {
       type: String,
-      enum: ['generating', 'completed', 'failed', 'processing'],
-      default: 'generating',
+      enum: ['pending', 'processing', 'completed', 'failed'],
+      default: 'pending',
     },
     isPublic: {
       type: Boolean,
@@ -132,13 +153,60 @@ const songSchema = new mongoose.Schema(
       default: 0,
     },
     
-    // Generation metadata
+    // Generation metadata (unified)
     generationTime: Number, // Time taken to generate in seconds
+    generationStartTime: Date, // When generation started
+    generationEndTime: Date, // When generation completed
     errorMessage: String, // Error message if generation failed
-    taskId: String, // Suno API task ID for reference
-    clipId: String, // Suno AI clip identifier (different from taskId)
+    taskId: String, // DEPRECATED - use apiTaskId
+    clipId: String, // DEPRECATED - use apiClipId
     lyrics: String, // Full structured lyrics (separate from description)
-    originalCreatedAt: Date, // Original Suno creation timestamp
+    originalCreatedAt: Date, // Original API creation timestamp
+    isInstrumental: {
+      type: Boolean,
+      default: false
+    },
+    
+    // VARIATION SUPPORT
+    parentSongId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Song'
+    },
+    isVariation: {
+      type: Boolean,
+      default: false
+    },
+    variationType: {
+      type: String,
+      enum: ['extend', 'cover', 'remix', 'stems']
+    },
+    
+    // QUALITY METRICS
+    generationCost: {
+      type: Number,
+      default: 0
+    },
+    userRating: {
+      type: Number,
+      min: 1,
+      max: 5
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false
+    },
+    
+    // METADATA TRACKING
+    metadataCoverageScore: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100
+    },
+    lastMetadataUpdate: {
+      type: Date,
+      default: Date.now
+    },
     
     // Generation Analytics
     generationAnalytics: {

@@ -1,0 +1,1809 @@
+# Suno Instructions
+
+# Key Field Usage
+
+## 1. **Custom Mode: `custom_mode = true`**
+   - In this mode, you can customize the **song's title**, **style**, and **lyrics**, corresponding to the fields:
+     - `title`
+     - `tags`
+     - `prompt`
+
+## 2. **Non-Custom Mode: `custom_mode = false`**
+   - In this mode, you only need the `gpt_description_prompt` field to describe the music.
+
+## 3. **Instrumental Control**
+   - Use the `make_instrumental` field to control whether to generate instrumental-only music.
+
+---
+
+# Field Details
+
+- **`custom_mode`**:  
+  A boolean switch for enabling custom mode.  
+  - **Required**  
+  - When enabled, it allows you to control the song's title, style, and lyrics.
+
+- **`prompt`**:  
+  The song's lyrics.  
+  - **Required** if custom mode is enabled.  
+  - for v4.5+ and v4.5-plus, Should generally not exceed 5000 characters
+  - for v4 and below, Should generally not exceed 3000 characters
+
+- **`title`**:  
+  The song's title.  
+  - **Optional**  
+  - Should generally not exceed 80 characters.
+
+- **`tags`**:  
+  The song's style or genre.  
+  - **Optional**  
+  - for v4.5+ and v4.5-plus, Should generally not exceed 1000 characters
+  - for v4 and below, Should generally not exceed 200 characters
+
+- **`mv`**:  
+  The model version for generation.  
+  - **Required**  
+  - Can be either `chirp-v3-5` or `chirp-v4` or `chirp-v4-5` or `chirp-v4-5-plus`or `chirp-v5`.
+
+- **`make_instrumental`**:  
+  Controls whether to generate instrumental-only music.  
+  - **Optional**
+
+- **`gpt_description_prompt`**:  
+  A description of the song.  
+  - **Required** if custom mode is disabled.  
+  - Should generally not exceed 400 characters.
+
+- **`task_type`**:  
+  Specifies the type of task to perform.  
+  - **Required**  
+  - Allowed values: `create_music`, `extend_music`, `concat_music`, `cover_music`,`cover_upload_music`, `extend_upload_music`, `persona_music`.
+
+- **`persona_id`**:  
+  The ID of a persona created via the "create persona" API.  
+  - **Optional**  
+  - This ID can be used to generate music based on the specified persona.
+
+- **`style_weight`**:  
+  The weight of the tags field (style).  
+  - **Optional**  
+  - Range: `>= 0 <= 1`
+
+- **`weirdness_constraint`**:  
+  The randomness or weirdness of the song.  
+  - **Optional**  
+  - Range: `>= 0 <= 1`
+
+- **`negative_tags`**:  
+  Elements you want to avoid in your songs.  
+  - **Optional**
+
+- **`vocal_gender`**:  
+  "f"(Female) or "m"(Male). control the vocal of gender,
+  support sonic-v4-5 and sonic-v4-5-plus
+  - **Optional**
+
+- **`auto_lyrics`**:  
+  weather auto generate lyrics and style,Must be used with custom_mode:true
+  - **Optional**
+
+## Note
+
+- When use your own uploaded music, you need to use the **`upload`** task type.
+
+# create music (custom mode)
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: create music (custom mode)
+      deprecated: false
+      description: Generate songs using custom lyrics, style, and other parameters
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                custom_mode:
+                  type: boolean
+                  description: >-
+                    If you want to customize the lyrics, this option should be
+                    true.
+                prompt:
+                  type: string
+                  description: >-
+                    song lyrics,for v4 and below should be less than 3000
+                    characters,for v4.5 and v4.5-plus should be less than 5000
+                    characters
+                title:
+                  type: string
+                  description: song title
+                  maxLength: 120
+                tags:
+                  type: string
+                  description: >-
+                    song tags,for v4 and below should be less than 200
+                    characters,for v
+
+                    4.5 and v4.5-plus,should be less than 1000
+                make_instrumental:
+                  type: boolean
+                  description: instrumental mode
+                mv:
+                  type: string
+                  description: music model
+                  enum:
+                    - chirp-v3-5
+                    - chirp-v4
+                    - chirp-v4-5
+                    - chirp-v4-5-plus
+                    - chirp-v5
+                  x-apidog-enum:
+                    - name: ''
+                      value: chirp-v3-5
+                      description: ''
+                    - name: ''
+                      value: chirp-v4
+                      description: ''
+                    - name: ''
+                      value: chirp-v4-5
+                      description: ''
+                    - value: chirp-v4-5-plus
+                      name: ''
+                      description: ''
+                    - value: chirp-v5
+                      name: ''
+                      description: ''
+                gpt_description_prompt:
+                  type: string
+                  description: description of the music
+                  maxLength: 400
+                negative_tags:
+                  type: string
+                  description: Elements you want to avoid in your songs
+                style_weight:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  description: The weight of the tags field
+                weirdness_constraint:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  description: The randomness or weirdness of the song
+              required:
+                - custom_mode
+                - prompt
+                - mv
+              x-apidog-orders:
+                - custom_mode
+                - prompt
+                - title
+                - tags
+                - style_weight
+                - weirdness_constraint
+                - negative_tags
+                - mv
+                - make_instrumental
+                - gpt_description_prompt
+            example:
+              custom_mode: true
+              prompt: |-
+                [Verse]
+                Stars they shine above me
+                Moonlight softly glows
+                Whispers in the night sky
+                Dreams that only grow
+
+                [Verse 2]
+                Midnight winds are calling
+                Carrying a tune
+                Heartbeats echo softly
+                Dancing with the moon
+
+                [Chorus]
+                Starry night starry night
+                Let your light ignite ignite
+                Bright as day bright as day
+                Guide my way guide my way
+
+                [Verse 3]
+                Shadows move and twinkle
+                Nighttime come alive
+                Mystery in the heavens
+                Stories that survive
+
+                [Bridge]
+                Magic fills the darkness
+                Wonder in the air
+                Every star a secret
+                In the sky I stare
+
+                [Chorus]
+                Starry night starry night
+                Let your light ignite ignite
+                Bright as day bright as day
+                Guide my way guide my way
+              title: Starts
+              tags: pop
+              style_weight: 0.5
+              weirdness_constraint: 0.5
+              negative_tags: piano
+              gpt_description_prompt: ''
+              make_instrumental: false
+              mv: chirp-v5
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 468d0e42-f7a6-40ce-9a4c-37db56b13b99
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105495-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# create music (no-custom mode) 
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: 'create music (no-custom mode) '
+      deprecated: false
+      description: Generate songs using song descriptions
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make_instrumental:
+                  type: boolean
+                  description: instrumental mode
+                mv:
+                  type: string
+                  description: music model
+                  enum:
+                    - chirp-v3-5
+                    - chirp-v4
+                    - chirp-v4-5
+                    - chirp-v4-5-plus
+                    - chirp-v5
+                  x-apidog-enum:
+                    - name: ''
+                      value: chirp-v3-5
+                      description: ''
+                    - name: ''
+                      value: chirp-v4
+                      description: ''
+                    - name: ''
+                      value: chirp-v4-5
+                      description: ''
+                    - value: chirp-v4-5-plus
+                      name: ''
+                      description: ''
+                    - value: chirp-v5
+                      name: ''
+                      description: ''
+                gpt_description_prompt:
+                  type: string
+                  description: description of the music
+                  maxLength: 400
+                custom_mode:
+                  type: boolean
+                  description: >-
+                    If you want to customize the lyrics, this option should be
+                    true.
+              required:
+                - mv
+                - custom_mode
+              x-apidog-orders:
+                - custom_mode
+                - mv
+                - make_instrumental
+                - gpt_description_prompt
+            example:
+              custom_mode: false
+              gpt_description_prompt: happy song
+              make_instrumental: false
+              mv: chirp-v5
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 468d0e42-f7a6-40ce-9a4c-37db56b13b99
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-21527174-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# create music (Control singer gender) 
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: 'create music (Control singer gender) '
+      deprecated: false
+      description: >-
+        Generate songs using song descriptions, and control singer gender (
+        support sonic-v4-5 and sonic-v4-5-plus)
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make_instrumental:
+                  type: boolean
+                  description: instrumental mode
+                mv:
+                  type: string
+                  description: music model
+                  enum:
+                    - chirp-v4-5
+                    - chirp-v4-5-plus
+                    - chirp-v5
+                  x-apidog-enum:
+                    - name: ''
+                      value: chirp-v4-5
+                      description: ''
+                    - value: chirp-v4-5-plus
+                      name: ''
+                      description: ''
+                    - value: chirp-v5
+                      name: ''
+                      description: ''
+                gpt_description_prompt:
+                  type: string
+                  description: description of the music
+                  maxLength: 400
+                custom_mode:
+                  type: boolean
+                  description: >-
+                    If you want to customize the lyrics, this option should be
+                    true.
+                vocal_gender:
+                  type: string
+                  enum:
+                    - f
+                    - m
+                  x-apidog-enum:
+                    - value: f
+                      name: ''
+                      description: Female
+                    - value: m
+                      name: ''
+                      description: Male
+                  description: gender of vocal,m -> Male, f -> Female
+              required:
+                - mv
+                - custom_mode
+                - vocal_gender
+              x-apidog-orders:
+                - custom_mode
+                - mv
+                - make_instrumental
+                - gpt_description_prompt
+                - vocal_gender
+            example:
+              custom_mode: false
+              gpt_description_prompt: happy song
+              make_instrumental: false
+              vocal_gender: m
+              mv: chirp-v5
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 468d0e42-f7a6-40ce-9a4c-37db56b13b99
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-21527219-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# create music (auto lyrics mode) 
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: 'create music (auto lyrics mode) '
+      deprecated: false
+      description: >-
+        Generate songs using custom lyrics, style, and other parameters; But
+        with audo_lyrics: true, you can control the lyrics description, style
+        description, and use other advanced parameters separately;
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                make_instrumental:
+                  type: boolean
+                  description: instrumental mode
+                mv:
+                  type: string
+                  description: music model
+                  enum:
+                    - chirp-v4-5
+                    - chirp-v4-5-plus
+                    - chirp-v5
+                  x-apidog-enum:
+                    - name: ''
+                      value: chirp-v4-5
+                      description: ''
+                    - value: chirp-v4-5-plus
+                      name: ''
+                      description: ''
+                    - value: chirp-v5
+                      name: ''
+                      description: ''
+                gpt_description_prompt:
+                  type: string
+                  description: description of the music
+                  maxLength: 400
+                custom_mode:
+                  type: boolean
+                  description: >-
+                    If you want to customize the lyrics, this option should be
+                    true.
+                auto_lyrics:
+                  type: boolean
+                  description: 'auto generate lyrics and tags '
+              required:
+                - mv
+                - custom_mode
+                - auto_lyrics
+              x-apidog-orders:
+                - custom_mode
+                - mv
+                - make_instrumental
+                - gpt_description_prompt
+                - auto_lyrics
+            example:
+              custom_mode: true
+              prompt: happy song
+              make_instrumental: false
+              auto_lyrics: true
+              mv: chirp-v5
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 468d0e42-f7a6-40ce-9a4c-37db56b13b99
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-21527522-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# extend music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: extend music
+      deprecated: false
+      description: Use the clip id of the song generated on our platform to extend the song
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                custom_mode:
+                  type: boolean
+                  description: >-
+                    If you want to customize the lyrics, this option should be
+                    true.
+                prompt:
+                  type: string
+                  description: >-
+                    song lyrics,for v4 and below should be less than 3000
+                    characters,for v4.5 and v4.5-plus should be less than 5000
+                    characters
+                title:
+                  type: string
+                  description: song title
+                  maxLength: 120
+                tags:
+                  type: string
+                  description: >-
+                    song tags,for v4 and below should be less than 200
+                    characters,for v
+
+                    4.5 and v4.5-plus,should be less than 1000
+                continue_clip_id:
+                  type: string
+                  description: The clip id of the song to be extended
+                continue_at:
+                  type: integer
+                  description: The starting number of seconds to extend
+                mv:
+                  type: string
+                  description: music model
+                  enum:
+                    - chirp-v3-5
+                    - chirp-v4
+                    - chirp-v4-5
+                    - chirp-v4-5-plus
+                    - chirp-v5
+                  x-apidog-enum:
+                    - name: ''
+                      value: chirp-v3-5
+                      description: ''
+                    - name: ''
+                      value: chirp-v4
+                      description: ''
+                    - name: ''
+                      value: chirp-v4-5
+                      description: ''
+                    - value: chirp-v4-5-plus
+                      name: ''
+                      description: ''
+                    - value: chirp-v5
+                      name: ''
+                      description: ''
+                task_type:
+                  type: string
+                  description: >-
+                    Task type, can be create_music, extend_music, concat_music,
+                    cover_music, extend_upload_music, persona_music
+              required:
+                - custom_mode
+                - prompt
+                - continue_clip_id
+                - continue_at
+                - mv
+                - task_type
+              x-apidog-orders:
+                - task_type
+                - custom_mode
+                - prompt
+                - title
+                - tags
+                - continue_clip_id
+                - continue_at
+                - mv
+            example:
+              task_type: extend_music
+              custom_mode: true
+              prompt: |-
+                [Verse]
+                Stars they shine above me
+                Moonlight softly glows
+                Whispers in the night sky
+                Dreams that only grow
+
+                [Verse 2]
+                Midnight winds are calling
+                Carrying a tune
+                Heartbeats echo softly
+                Dancing with the moon
+
+                [Chorus]
+                Starry night starry night
+                Let your light ignite ignite
+                Bright as day bright as day
+                Guide my way guide my way
+
+                [Verse 3]
+                Shadows move and twinkle
+                Nighttime come alive
+                Mystery in the heavens
+                Stories that survive
+
+                [Bridge]
+                Magic fills the darkness
+                Wonder in the air
+                Every star a secret
+                In the sky I stare
+
+                [Chorus]
+                Starry night starry night
+                Let your light ignite ignite
+                Bright as day bright as day
+                Guide my way guide my way
+              title: Starts
+              tags: pop
+              continue_clip_id: a533515b-56c9-4eb2-8cb8-7f3dfa165eb8
+              continue_at: 30
+              mv: chirp-v5
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 468d0e42-f7a6-40ce-9a4c-37db56b13b99
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105496-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# concat music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: concat music
+      deprecated: false
+      description: Get the complete song corresponding to the extend operation
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_type:
+                  type: string
+                  description: >-
+                    Task type, can be create_music, extend_music, concat_music,
+                    cover_music, extend_upload_music, persona_music
+                continue_clip_id:
+                  type: string
+                  description: The clip id you get after extend
+              required:
+                - task_type
+                - continue_clip_id
+              x-apidog-orders:
+                - task_type
+                - continue_clip_id
+            example:
+              task_type: concat_music
+              continue_clip_id: a533515b-56c9-4eb2-8cb8-7f3dfa165eb8
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 51bc6dd0-508a-414d-9ef3-71f7bad81cf7
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105497-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# concat music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: concat music
+      deprecated: false
+      description: Get the complete song corresponding to the extend operation
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_type:
+                  type: string
+                  description: >-
+                    Task type, can be create_music, extend_music, concat_music,
+                    cover_music, extend_upload_music, persona_music
+                continue_clip_id:
+                  type: string
+                  description: The clip id you get after extend
+              required:
+                - task_type
+                - continue_clip_id
+              x-apidog-orders:
+                - task_type
+                - continue_clip_id
+            example:
+              task_type: concat_music
+              continue_clip_id: a533515b-56c9-4eb2-8cb8-7f3dfa165eb8
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 51bc6dd0-508a-414d-9ef3-71f7bad81cf7
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105497-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# stems basic
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/stems/basic:
+    post:
+      summary: stems basic
+      deprecated: false
+      description: >-
+        You can convert songs generated by our platform into 2 tracks of vocals
+        and instruments through this API.
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clip_id:
+                  type: string
+                  description: the song id you want to get stems
+              required:
+                - clip_id
+              x-apidog-orders:
+                - clip_id
+            example:
+              clip_id: 8ce9770b-ec3b-4029-a3e3-4b8db20da7d1
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: af0b3e97-0905-4827-a3c9-a31976873120
+          headers: {}
+          x-apidog-name: Success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-20062720-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# stems full
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/stems/full:
+    post:
+      summary: stems full
+      deprecated: false
+      description: >-
+        You can convert songs generated by our platform into 12 tracks of vocals
+        and instruments through this API.
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clip_id:
+                  type: string
+                  description: the song id you want to get stems
+              x-apidog-orders:
+                - clip_id
+              required:
+                - clip_id
+            example:
+              clip_id: 8ce9770b-ec3b-4029-a3e3-4b8db20da7d1
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: af0b3e97-0905-4827-a3c9-a31976873120
+          headers: {}
+          x-apidog-name: Success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-20062716-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# create persona
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/persona:
+    post:
+      summary: create persona
+      deprecated: false
+      description: Get the virtual singer for the corresponding song
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: the name of this persona
+                description:
+                  type: string
+                  description: the style of this persona
+                continue_clip_id:
+                  type: string
+                  description: The clip id that you want to create this persona
+              required:
+                - description
+                - continue_clip_id
+                - name
+              x-apidog-orders:
+                - name
+                - description
+                - continue_clip_id
+            example:
+              name: test persona
+              description: Pop, rap, rhythmic male bass
+              continue_clip_id: a2632456-62b0-405c-9de8-2ba509cf24fe
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  persona_id:
+                    type: string
+                    description: the id of persona, you can use it to create music
+                  message:
+                    type: string
+                required:
+                  - code
+                  - persona_id
+                  - message
+                x-apidog-orders:
+                  - message
+                  - code
+                  - persona_id
+              example:
+                code: 200
+                persona_id: c08806c1-34fa-4290-a78d-0c623eb1dd1c
+                message: success
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105499-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# create music with persona
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/create:
+    post:
+      summary: create music with persona
+      deprecated: false
+      description: Use the created persona id (virtual singer) to create a new song
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_type:
+                  type: string
+                  description: >-
+                    Task type, can be create_music, extend_music, concat_music,
+                    cover_music, extend_upload_music, persona_music
+                custom_mode:
+                  type: boolean
+                  description: >-
+                    If you want to customize the lyrics, this option should be
+                    true.
+                prompt:
+                  type: string
+                  description: >-
+                    song lyrics,for v4 and below should be less than 3000
+                    characters,for v4.5 and v4.5-plus should be less than 5000
+                    characters
+                title:
+                  type: string
+                  description: song title
+                  maxLength: 120
+                tags:
+                  type: string
+                  description: >-
+                    song tags,for v4 and below should be less than 200
+                    characters,for v
+
+                    4.5 and v4.5-plus,should be less than 1000
+                persona_id:
+                  type: string
+                  description: the persona id generated by create persona endpoint
+                mv:
+                  type: string
+                  description: music model
+                  enum:
+                    - chirp-v3-5
+                    - chirp-v4
+                    - chirp-v4-5
+                    - chirp-v4-5-plus
+                  x-apidog-enum:
+                    - name: ''
+                      value: chirp-v3-5
+                      description: ''
+                    - name: ''
+                      value: chirp-v4
+                      description: ''
+                    - name: ''
+                      value: chirp-v4-5
+                      description: ''
+                    - value: chirp-v4-5-plus
+                      name: ''
+                      description: ''
+              required:
+                - task_type
+                - custom_mode
+                - prompt
+                - persona_id
+                - mv
+              x-apidog-orders:
+                - task_type
+                - custom_mode
+                - prompt
+                - title
+                - tags
+                - persona_id
+                - mv
+            example:
+              task_type: persona_music
+              custom_mode: true
+              prompt: |-
+                [Verse]
+                Stars they shine above me
+                Moonlight softly glows
+                Whispers in the night sky
+                Dreams that only grow
+
+                [Verse 2]
+                Midnight winds are calling
+                Carrying a tune
+                Heartbeats echo softly
+                Dancing with the moon
+
+                [Chorus]
+                Starry night starry night
+                Let your light ignite ignite
+                Bright as day bright as day
+                Guide my way guide my way
+
+                [Verse 3]
+                Shadows move and twinkle
+                Nighttime come alive
+                Mystery in the heavens
+                Stories that survive
+
+                [Bridge]
+                Magic fills the darkness
+                Wonder in the air
+                Every star a secret
+                In the sky I stare
+
+                [Chorus]
+                Starry night starry night
+                Let your light ignite ignite
+                Bright as day bright as day
+                Guide my way guide my way
+              title: Starts
+              tags: pop
+              persona_id: c08806c1-34fa-4290-a78d-0c623eb1dd1c
+              mv: chirp-v3-5
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  task_id:
+                    type: string
+                required:
+                  - message
+                  - task_id
+                x-apidog-orders:
+                  - message
+                  - task_id
+              example:
+                message: success
+                task_id: 81ed9f60-56ae-48c1-9c46-33a8220dfca7
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105500-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# upload music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/upload:
+    post:
+      summary: upload music
+      deprecated: false
+      description: Upload local songs and get the clip id for subsequent operations
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: >-
+                    the online music url you want to upload,It must be
+                    copyright-free music and be between 6 and 60 seconds long.
+              required:
+                - url
+              x-apidog-orders:
+                - url
+            example:
+              url: >-
+                https://audio.jukehost.co.uk/Ij5SXdAJKLg4tggS8T1xIH1Z0DuOWq5e.mp3
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  clip_id:
+                    type: string
+                    description: The sonic clip id after uploading
+                  message:
+                    type: string
+                required:
+                  - code
+                  - clip_id
+                  - message
+                x-apidog-orders:
+                  - code
+                  - clip_id
+                  - message
+              example:
+                code: 200
+                clip_id: cfbc3d3c-2add-4265-bcdf-924092096e3d
+                message: success
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105501-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# upload music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/upload:
+    post:
+      summary: upload music
+      deprecated: false
+      description: Upload local songs and get the clip id for subsequent operations
+      tags:
+        - suno
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: >-
+                    the online music url you want to upload,It must be
+                    copyright-free music and be between 6 and 60 seconds long.
+              required:
+                - url
+              x-apidog-orders:
+                - url
+            example:
+              url: >-
+                https://audio.jukehost.co.uk/Ij5SXdAJKLg4tggS8T1xIH1Z0DuOWq5e.mp3
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  clip_id:
+                    type: string
+                    description: The sonic clip id after uploading
+                  message:
+                    type: string
+                required:
+                  - code
+                  - clip_id
+                  - message
+                x-apidog-orders:
+                  - code
+                  - clip_id
+                  - message
+              example:
+                code: 200
+                clip_id: cfbc3d3c-2add-4265-bcdf-924092096e3d
+                message: success
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105501-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+# get music
+
+## OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /api/v1/suno/task/{task_id}:
+    get:
+      summary: get music
+      deprecated: false
+      description: >-
+        Use the obtained task ID to poll song data. Recommended polling time:
+        15s-25s
+      tags:
+        - suno
+      parameters:
+        - name: task_id
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        clip_id:
+                          type: string
+                        title:
+                          type: string
+                        tags:
+                          type: string
+                        lyrics:
+                          type: string
+                        image_url:
+                          type: string
+                        audio_url:
+                          type: string
+                        video_url:
+                          type: string
+                        created_at:
+                          type: string
+                        mv:
+                          type: string
+                        gpt_description_prompt:
+                          type: 'null'
+                        duration:
+                          type: integer
+                        state:
+                          type: string
+                          description: pending;running;succeeded
+                      required:
+                        - clip_id
+                        - title
+                        - tags
+                        - lyrics
+                        - image_url
+                        - audio_url
+                        - video_url
+                        - created_at
+                        - mv
+                        - gpt_description_prompt
+                        - duration
+                        - state
+                      x-apidog-orders:
+                        - clip_id
+                        - title
+                        - tags
+                        - lyrics
+                        - image_url
+                        - audio_url
+                        - video_url
+                        - created_at
+                        - mv
+                        - gpt_description_prompt
+                        - duration
+                        - state
+                  message:
+                    type: string
+                required:
+                  - code
+                  - data
+                  - message
+                x-apidog-orders:
+                  - code
+                  - data
+                  - message
+              example:
+                code: 200
+                data:
+                  - clip_id: 26c9c592-0566-46cf-bb71-91ac1deaa7b5
+                    state: succeeded
+                    title: Starts
+                    tags: pop
+                    lyrics: |-
+                      [Verse]
+                      Stars they shine above me
+                      Moonlight softly glows
+                      Whispers in the night sky
+                      Dreams that only grow
+
+                      [Verse 2]
+                      Midnight winds are calling
+                      Carrying a tune
+                      Heartbeats echo softly
+                      Dancing with the moon
+
+                      [Chorus]
+                      Starry night starry night
+                      Let your light ignite ignite
+                      Bright as day bright as day
+                      Guide my way guide my way
+
+                      [Verse 3]
+                      Shadows move and twinkle
+                      Nighttime come alive
+                      Mystery in the heavens
+                      Stories that survive
+
+                      [Bridge]
+                      Magic fills the darkness
+                      Wonder in the air
+                      Every star a secret
+                      In the sky I stare
+
+                      [Chorus]
+                      Starry night starry night
+                      Let your light ignite ignite
+                      Bright as day bright as day
+                      Guide my way guide my way
+                    image_url: >-
+                      https://cdn2.suno.ai/image_26c9c592-0566-46cf-bb71-91ac1deaa7b5.jpeg
+                    audio_url: >-
+                      https://cdn1.suno.ai/26c9c592-0566-46cf-bb71-91ac1deaa7b5.mp3
+                    video_url: >-
+                      https://cdn1.suno.ai/26c9c592-0566-46cf-bb71-91ac1deaa7b5.mp4
+                    created_at: '2024-11-27T10:26:46.552Z'
+                    mv: chirp-v3-5
+                    gpt_description_prompt: null
+                    duration: 179
+                  - clip_id: 626f2fb1-b1cb-43e3-aabd-7ef64e1ab6b0
+                    state: succeeded
+                    title: Starts
+                    tags: pop
+                    lyrics: |-
+                      [Verse]
+                      Stars they shine above me
+                      Moonlight softly glows
+                      Whispers in the night sky
+                      Dreams that only grow
+
+                      [Verse 2]
+                      Midnight winds are calling
+                      Carrying a tune
+                      Heartbeats echo softly
+                      Dancing with the moon
+
+                      [Chorus]
+                      Starry night starry night
+                      Let your light ignite ignite
+                      Bright as day bright as day
+                      Guide my way guide my way
+
+                      [Verse 3]
+                      Shadows move and twinkle
+                      Nighttime come alive
+                      Mystery in the heavens
+                      Stories that survive
+
+                      [Bridge]
+                      Magic fills the darkness
+                      Wonder in the air
+                      Every star a secret
+                      In the sky I stare
+
+                      [Chorus]
+                      Starry night starry night
+                      Let your light ignite ignite
+                      Bright as day bright as day
+                      Guide my way guide my way
+                    image_url: >-
+                      https://cdn2.suno.ai/image_626f2fb1-b1cb-43e3-aabd-7ef64e1ab6b0.jpeg
+                    audio_url: >-
+                      https://cdn1.suno.ai/626f2fb1-b1cb-43e3-aabd-7ef64e1ab6b0.mp3
+                    video_url: >-
+                      https://cdn1.suno.ai/626f2fb1-b1cb-43e3-aabd-7ef64e1ab6b0.mp4
+                    created_at: '2024-11-27T10:26:46.552Z'
+                    mv: chirp-v3-5
+                    gpt_description_prompt: null
+                    duration: 208
+                message: success
+          headers: {}
+          x-apidog-name: success
+      security:
+        - bearer: []
+      x-apidog-folder: suno
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/1000455/apis/api-19105502-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://api.sunoapi.com
+    description: Prod Env
+security: []
+
+```
+
+
+
+
+
+
+
+
+
+
+

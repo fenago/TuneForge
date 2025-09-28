@@ -163,9 +163,9 @@ export default function CreditsPage() {
               ) : (
                 <>
                   <p className="text-3xl font-bold text-gray-900">
-                    {credits ? credits.credits + credits.extra_credits : 0}
+                    {credits ? (credits as any).credits + ((credits as any).extra_credits || 0) : 0}
                   </p>
-                  <p className="text-sm text-gray-600">Credits</p>
+                  <p className="text-sm text-gray-600">Available Credits</p>
                 </>
               )}
             </div>
